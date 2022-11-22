@@ -1,17 +1,16 @@
-﻿using SharpLearning.Containers;
-using SharpLearning.Containers.Matrices;
+﻿#region SharpLearningNameSpaces
 using SharpLearning.CrossValidation.TrainingTestSplitters;
 using SharpLearning.DecisionTrees.Learners;
 using SharpLearning.DecisionTrees.Models;
-using SharpLearning.InputOutput.Csv;
+using SharpLearning.Containers.Matrices;
 using SharpLearning.Metrics.Regression;
-using System;
-using System.Collections.Generic;
+using SharpLearning.InputOutput.Csv;
+using SharpLearning.Containers;
+#endregion SharpLearningNameSpaces
+
+#region GenericNameSpaces
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+#endregion GenericNameSpaces
 
 namespace Data_mining_project
 {
