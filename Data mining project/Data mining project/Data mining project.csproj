@@ -22,4 +22,10 @@
     <PackageReference Include="SharpLearning.RandomForest" Version="0.31.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="winequality-white.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
