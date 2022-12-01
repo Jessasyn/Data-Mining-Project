@@ -86,7 +86,8 @@ namespace Data_mining_project
         public double? TestError { get; private set; }
 
         /// <summary>
-        /// Action that handles post pruning when executed. To be set externally.
+        /// Action that handles post pruning when executed. <br/>
+        /// The default value of this field is the empty lambda, which does not do anything, but it might be assigned some other pruner from elsewhere.
         /// </summary>
         public Action<Classifier> PostPruner = (Classifier classifier) => { };
 
@@ -98,6 +99,8 @@ namespace Data_mining_project
         /// <param name="targetColumn">The name of the column that contains the values to be predicted.</param>
         public Classifier(Func<TextReader> parserPath, string targetColumn)
         {
+            //TODO: i propose the creation of an enum that is passed along in the constructor, which specifies the pruning method to use.
+            // then, we can internalize that, which leads to more abstraction.
             this._parser = new CsvParser(parserPath);
             this._targetColumn = targetColumn;
         }
@@ -118,6 +121,7 @@ namespace Data_mining_project
             F64Matrix observations = this._parser.EnumerateRows(c => c != this._targetColumn)
                                                  .ToF64Matrix();
 
+            //TODO: here would be a good spot for a comment that explains *why* we distinguish cases on the prunepercentage's value.
             if (prunePercentage > 0d)
             {
                 PruningSetSplitter<double> splitter = new PruningSetSplitter<double>(trainPercentage, prunePercentage);
@@ -144,19 +148,20 @@ namespace Data_mining_project
         [MemberNotNull(nameof(this.Model))]
         public void Learn()
         {
-            if(this.TrainSet is null)
+            if (this.TrainSet is null)
             {
                 throw new InvalidOperationException($"Cannot call {this.Learn} before {this.ReadData} has been called!");
             }
 
-            ClassificationDecisionTreeLearner treeLearner = new ClassificationDecisionTreeLearner(this.MaximumTreeDepth, 
+            ClassificationDecisionTreeLearner treeLearner = new ClassificationDecisionTreeLearner(this.MaximumTreeDepth,  
                                                                                                   this.MinimumSplitSize, 
-                                                                                            this.FeaturesPerSplit, 
+                                                                                                  this.FeaturesPerSplit,  
                                                                                                   this.MinimumInformationGain, 
                                                                                                   this.RandomSeed);
+
             this.Model = treeLearner.Learn(this.TrainSet.Observations, this.TrainSet.Targets);
 
-            PostPruner(this);
+            this.PostPruner(this);
         }
 
         /// <summary>
