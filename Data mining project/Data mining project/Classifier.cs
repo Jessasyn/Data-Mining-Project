@@ -10,6 +10,7 @@ using SharpLearning.Containers;
 
 #region GenericNameSpaces
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 #endregion GenericNameSpaces
 
 namespace Data_mining_project
@@ -65,6 +66,11 @@ namespace Data_mining_project
         public ObservationTargetSet? TestSet { get; private set; }
 
         /// <summary>
+        /// The prune set for this classifier. Only set and used with reduced error pruning. This field is <see langword="null"/> until <see cref="ReadData(double)"/> is called.
+        /// </summary>
+        public ObservationTargetSet? PruneSet { get; private set; }
+
+        /// <summary>
         /// The model that has learned the <see cref="TrainSet"/>. This field is <see langword="null"/> until <see cref="Learn"/> is called.
         /// </summary>
         public ClassificationDecisionTreeModel? Model { get; private set; }
@@ -78,6 +84,20 @@ namespace Data_mining_project
         /// The test error of this classifier, for the specified dataset.
         /// </summary>
         public double? TestError { get; private set; }
+
+        /// <summary>
+        /// Action that handles post pruning when executed. To be set externally.
+        /// </summary>
+        public Action<Classifier> PostPruner = (Classifier classifier) => { };
+
+        /// <summary>
+        /// Action that handles the behaviour for splitting.
+        /// </summary>
+        public Func<Classifier, double[], F64Matrix, TrainingTestIndexSplitter<double>, List<ObservationTargetSet> > SplitBehaviour = 
+            (Classifier c, double[] targets, F64Matrix observations, TrainingTestIndexSplitter<double> splitter) => {
+            TrainingTestSetSplit trainingTestSplit = splitter.SplitSet(observations, targets);
+            return new List<ObservationTargetSet?> () {};
+        };
 
         /// <summary>
         /// Constructs a new classifier, which will read from the path provided in <paramref name="parserPath"/>, 
@@ -109,9 +129,10 @@ namespace Data_mining_project
 
             TrainingTestIndexSplitter<double> splitter = new StratifiedTrainingTestIndexSplitter<double>(trainPercentage);
 
-            TrainingTestSetSplit trainingTestSplit = splitter.SplitSet(observations, targets);
-            this.TrainSet = trainingTestSplit.TrainingSet;
-            this.TestSet = trainingTestSplit.TestSet;
+            var setList = SplitBehaviour(this, targets, observations, splitter);
+            this.TrainSet = setList[0];
+            this.TestSet = setList[1];
+            this.PruneSet = setList[2];
         }
 
         /// <summary>
@@ -130,10 +151,12 @@ namespace Data_mining_project
 
             ClassificationDecisionTreeLearner treeLearner = new ClassificationDecisionTreeLearner(this.MaximumTreeDepth, 
                                                                                                   this.MinimumSplitSize, 
-                                                                                                  this.FeaturesPerSplit, 
+                                                                                            this.FeaturesPerSplit, 
                                                                                                   this.MinimumInformationGain, 
                                                                                                   this.RandomSeed);
             this.Model = treeLearner.Learn(this.TrainSet.Observations, this.TrainSet.Targets);
+
+            PostPruner(this);
         }
 
         /// <summary>
