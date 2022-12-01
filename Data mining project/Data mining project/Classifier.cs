@@ -91,15 +91,6 @@ namespace Data_mining_project
         public Action<Classifier> PostPruner = (Classifier classifier) => { };
 
         /// <summary>
-        /// Action that handles the behaviour for splitting.
-        /// </summary>
-        public Func<Classifier, double[], F64Matrix, TrainingTestIndexSplitter<double>, List<ObservationTargetSet> > SplitBehaviour = 
-            (Classifier c, double[] targets, F64Matrix observations, TrainingTestIndexSplitter<double> splitter) => {
-            TrainingTestSetSplit trainingTestSplit = splitter.SplitSet(observations, targets);
-            return new List<ObservationTargetSet?> () {};
-        };
-
-        /// <summary>
         /// Constructs a new classifier, which will read from the path provided in <paramref name="parserPath"/>, 
         /// and consider the target column with the name <paramref name="targetColumn"/>.
         /// </summary>
@@ -117,7 +108,7 @@ namespace Data_mining_project
         /// </summary>
         /// <param name="trainPercentage">The percentage of data that should be put in the training set.</param>
         [MemberNotNull(nameof(this.TrainSet), nameof(this.TestSet))]
-        public void ReadData(double trainPercentage)
+        public void ReadData(double trainPercentage, double prunePercentage=0d)
         {
             //Also known as y.
             double[] targets = this._parser.EnumerateRows(this._targetColumn)
@@ -127,12 +118,21 @@ namespace Data_mining_project
             F64Matrix observations = this._parser.EnumerateRows(c => c != this._targetColumn)
                                                  .ToF64Matrix();
 
-            TrainingTestIndexSplitter<double> splitter = new StratifiedTrainingTestIndexSplitter<double>(trainPercentage);
-
-            var setList = SplitBehaviour(this, targets, observations, splitter);
-            this.TrainSet = setList[0];
-            this.TestSet = setList[1];
-            this.PruneSet = setList[2];
+            if (prunePercentage > 0d)
+            {
+                PruningSetSplitter<double> splitter = new PruningSetSplitter<double>(trainPercentage, prunePercentage);
+                PruningSetSplit pruningSetSplit = splitter.SplitSet(observations, targets);
+                this.TrainSet = pruningSetSplit.TrainingSet;
+                this.TestSet = pruningSetSplit.TestSet;
+                this.PruneSet = pruningSetSplit.PruningSet;
+            }
+            else
+            {
+                TrainingTestIndexSplitter<double> splitter = new StratifiedTrainingTestIndexSplitter<double>(trainPercentage);
+                TrainingTestSetSplit pruningSetSplit = splitter.SplitSet(observations, targets);
+                this.TrainSet = pruningSetSplit.TrainingSet;
+                this.TestSet = pruningSetSplit.TestSet;
+            }
         }
 
         /// <summary>
