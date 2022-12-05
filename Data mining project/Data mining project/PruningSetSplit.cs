@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data_mining_project
 {
-    public sealed class PruningSetSplit
+    public struct PruningSetSplit
     {
         public ObservationTargetSet TrainingSet;
         public ObservationTargetSet PruningSet;

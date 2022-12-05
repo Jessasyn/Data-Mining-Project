@@ -101,6 +101,7 @@ namespace Data_mining_project
         {
             //TODO: i propose the creation of an enum that is passed along in the constructor, which specifies the pruning method to use.
             // then, we can internalize that, which leads to more abstraction.
+            // Re: I don't really understand why you would want to use an enum if you can just pass the pruning Action directly.
             this._parser = new CsvParser(parserPath);
             this._targetColumn = targetColumn;
         }
@@ -121,10 +122,10 @@ namespace Data_mining_project
             F64Matrix observations = this._parser.EnumerateRows(c => c != this._targetColumn)
                                                  .ToF64Matrix();
 
-            //TODO: here would be a good spot for a comment that explains *why* we distinguish cases on the prunepercentage's value.
+            // If the optional parameter prunePercentage is non-default then we want to reserve data for pruning
             if (prunePercentage > 0d)
             {
-                PruningSetSplitter<double> splitter = new PruningSetSplitter<double>(trainPercentage, prunePercentage);
+                PruningSetSplitter splitter = new PruningSetSplitter(trainPercentage, prunePercentage);
                 PruningSetSplit pruningSetSplit = splitter.SplitSet(observations, targets);
                 this.TrainSet = pruningSetSplit.TrainingSet;
                 this.TestSet = pruningSetSplit.TestSet;

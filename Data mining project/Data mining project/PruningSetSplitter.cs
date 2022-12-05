@@ -8,9 +8,7 @@ namespace Data_mining_project
     /// Splitter that divides the sets into three partitions: for training, pruning and testing.
     /// </summary>
     /// <typeparam name="T">The type that is split.</typeparam>
-    //TODO: this class is internal. that means its not able to be referenced outside of this project. inherently, there is nothing wrong with that, but 
-    // the pruningsetsplit class is public, and used in here. it would make more sense if both are internal, or both public.
-    internal sealed class PruningSetSplitter<T> //TODO: this T is not used anywhere. Im assuming you wish to use it in the stratified splitter?
+    public struct PruningSetSplitter
     {
         /// <summary>
         /// The splitter that splits the training set off from the rest of the data.
@@ -26,13 +24,14 @@ namespace Data_mining_project
         /// Creates two internal stratified splitters, with the specified <paramref name="trainPercentage"/> and <paramref name="prunePercentage"/>. <br/>
         /// Note that the validation percentage is defined from the two other percentages.
         /// </summary>
-        /// <param name="trainPercentage">The percentage of data that should </param>
-        /// <param name="prunePercentage"></param>
+        /// <param name="trainPercentage">The percentage of data that should be used for training</param>
+        /// <param name="prunePercentage">The percentage of data that should be used for pruning</param>
         public PruningSetSplitter(double trainPercentage, double prunePercentage, int seed=42) 
         {
-            //We create the two splitters, where the split percentage of the second is defined as the ratio between the prune percentage.
-            //TODO: does this gracefully handle the case where prune = 0d?
-            // it would be nice if it could...
+            if (trainPercentage <= 0d || trainPercentage >= 1d) throw new ArgumentException("Train percentage must be between 0 and 1");
+            if (prunePercentage <= 0d || prunePercentage >= 1d) throw new ArgumentException("Prune percentage must be between 0 and 1");
+            if (prunePercentage + trainPercentage >= 1d) throw new ArgumentException("The sum of the prune percentage and train percentage msust be between 0 and 1");
+
             this.trainingSplitter = new StratifiedTrainingTestIndexSplitter<double>(trainPercentage, seed);
             this.validationSplitter = new StratifiedTrainingTestIndexSplitter<double>(prunePercentage / (1 - trainPercentage), seed);
         }
@@ -53,10 +52,7 @@ namespace Data_mining_project
             ObservationTargetSet pruningSet = pruneSplit.TrainingSet;
             ObservationTargetSet testSet = pruneSplit.TestSet;
 
-            return new PruningSetSplit(trainingSet, pruningSet, testSet); 
-            //TODO: we could also use an implicit tuple (ObservationTargetSet a, ObservationTargetSet b, ObservationTargetSet c) 
-            //      that is not inherently better or worse, but if you choose to use a container, make it a struct! 
-            //      you're not defining any methods or using generics, so its better for the sake of efficiency.
+            return new PruningSetSplit(trainingSet, pruningSet, testSet);
         }
     }
 }
