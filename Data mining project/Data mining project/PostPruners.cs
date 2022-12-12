@@ -18,52 +18,71 @@ namespace Data_mining_project
             BinaryTree t = m.Tree;
             ObservationTargetSet pruneSet = c.PruneSet;
 
-            // TODO: This matrix is supposed to hold how many objects with a target pass through a certain node
-            // However, we don't really know how many classes exist, so it is better to replace this with an array of dictionaries probably.
-            // I've commented out a bunch of code for now to make it compilable but don't delete it.
-/*            F64Matrix populations = Populations();
+            F64Matrix populations = Populations();
 
-            void AddToPopulations(Node node, double[] observation, int target, F64Matrix populations)
+            /// <summary>
+            /// Adds this observation to the populations matrix. See the documentation of Populations() for more info.
+            /// </summary>
+            /// <param name="node"></param>
+            /// <param name="observation"></param>
+            /// <param name="populations"></param>
+            /// <returns></returns>
+            void AddXToPopulations(Node node, double[] observation, double target, F64Matrix populations)
             {
-                // Based on method predict in https://github.com/mdabros/SharpLearning/blob/3f6063fad8886b09c5715c8713541045be7560b9/src/SharpLearning.DecisionTrees/Nodes/BinaryTree.cs#L11
-                if (node.FeatureIndex == -1.0)
+                // This method is based on SharpLearning.DecisionTrees.Nodes.BinaryTree
+                // https://github.com/mdabros/SharpLearning/blob/3f6063fad8886b09c5715c8713541045be7560b9/src/SharpLearning.DecisionTrees/Nodes/BinaryTree.cs
+                if (node.FeatureIndex == -1.0) { return; } // Empty leaf case
+
+                // This node is not an empty leaf, so add it to the populations!
+                // Determine the array index that should be incremented
+                int rowIndex = node.NodeIndex;
+
+                double nodeClass = node.Value;
+                int colIndex = Array.IndexOf(t.TargetNames, target);
+
+                // Now add one to the count of this class to the populations matrix.
+                populations[rowIndex, colIndex] = populations[rowIndex, colIndex] + 1;
+
+                if (observation[node.FeatureIndex] <= node.Value) // Left child case
                 {
+                    AddXToPopulations(t.Nodes[node.LeftIndex], observation, target, populations);
                     return;
                 }
-
-                // Add this to the populations
-                populations.
-
-                if (observation[node.FeatureIndex] <= node.Value)
+                else // Right child case
                 {
-                    
-                }
-                else
-                {
-                    return AddToPopulations(t.Nodes[node.RightIndex], observation, populations);
+                    AddXToPopulations(t.Nodes[node.RightIndex], observation, target, populations);
+                    return;
                 }
 
                 throw new InvalidOperationException("The tree is degenerated.");
             }
+
             /// <summary>
-            /// For all nodes in the pruneSet,
-            /// populations[node nr] = amount of observations of each class that pass through this node
-            /// So this includes only non-leaves.
+            /// Go through all the training data and store the population of each class per node in F64Matrix populations.
+            /// 
+            /// For example, if i is the index of the node n in t.Nodes,
+            /// And j is the index of the class c in t.targetNames:
+            /// Then populations[i, j] is the amount of observations of class c that passed through node n.
+            /// 
             /// </summary>
-            /// <param name="t"></param>
-            /// <param name="pruneSet"></param>
-            /// <returns></returns>
+            /// <returns>populations</returns>
             F64Matrix Populations()
             {
-                // Based on: (But heavily modified)
                 var rows = t.Nodes.Count;
                 var cols = t.TargetNames.Length; // This is the amount of classes that exist in the data set
                 // Each row in the matrix represents a node and each column is the amount of observations of this class that passed through this node.
                 F64Matrix populations = new(rows, cols);
+                Node rootTrainNode = t.Nodes[0];
                 for (int i = 0; i < c.TrainSet.Targets.Length; i++)
-                    AddToPopulations(t.Nodes[0], c.TrainSet.Observations.Row(i), c.TrainSet.Targets[i] populations);
+                {
+                    // Using PredictNode, get the leaf node of each observation in the training set.
+                    double[] Xi = c.TrainSet.Observations.Row(i);
+                    double yi = c.TrainSet.Targets[i];
+                    AddXToPopulations(rootTrainNode, Xi, yi, populations);
+                }
+
                 return populations;
-            }*/
+            }
         };
     }
 }
