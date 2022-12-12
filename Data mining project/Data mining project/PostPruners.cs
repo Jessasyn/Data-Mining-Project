@@ -2,23 +2,74 @@
 using SharpLearning.Containers.Matrices;
 using SharpLearning.DecisionTrees.Models;
 using SharpLearning.DecisionTrees.Nodes;
+using SharpLearning.Metrics.Regression;
+using System.Linq;
 
 namespace Data_mining_project
 {
+    /// <summary>
+    /// Static class that contains several Action<Classifier>'s that are used to prune a decision tree.
+    /// </summary>
     static public class PostPruners
     {
+        /// <summary>
+        /// Reduced Error Pruning.
+        /// 
+        /// See section Pruning Algorithms > Reduced error pruning in https://en.wikipedia.org/wiki/Decision_tree_pruning
+        /// </summary>
+        /// <param name="c">The classifier.</param>
         static public Action<Classifier> ReducedError = (Classifier c) =>
         {
             ClassificationDecisionTreeModel m = c.Model ?? throw new InvalidOperationException($"Classifier does not have a model, call classifier.Learn first!.");
 
-            if (c.TrainSet is null) throw new InvalidOperationException($"Classifier does not have a training data set which is required for reduced error pruning");
+            if (c.TrainSet is null) throw new InvalidOperationException($"Classifier does not have a training data set, which is required for reduced error pruning");
 
-            if (c.PruneSet is null) throw new InvalidOperationException($"Classifier does not have a pruning data set which is required for reduced error pruning");
+            if (c.PruneSet is null) throw new InvalidOperationException($"Classifier does not have a pruning data set, which is required for reduced error pruning");
 
             BinaryTree t = m.Tree;
             ObservationTargetSet pruneSet = c.PruneSet;
 
+            // Matrix that stores the population of the classes at each node.
             F64Matrix populations = Populations();
+
+            for (int i = t.Nodes.Count-1; i >= 0; i--)
+            {
+                Node oldNode = t.Nodes[i];
+
+                // Only proceed if this is a non-leaf node
+                if (oldNode.LeftIndex != -1 && oldNode.RightIndex != -1)
+                {
+                    double prePrunedError = PruneSetError();
+
+                    // Find the most frequent class of this node using the populations matrix
+                    double[] nodeClasses = populations.Row(i);
+                    double frequencyOfmostFrequentClass = nodeClasses.Max();
+                    int indexMostFrequent = Array.IndexOf(nodeClasses, frequencyOfmostFrequentClass);
+                    double mostFrequentClass = t.TargetNames[indexMostFrequent];
+
+                    // Create a new node which is basically a copy of the old node but without childeren.
+                    t.Nodes[i] = new Node(
+                        -1, // Feature index is set to -1, this indicates that this is a leaf
+                        mostFrequentClass, // Most populous class
+                        -1, // The index of the left and right child shouldn't matter.
+                        -1,
+                        oldNode.NodeIndex,
+                        oldNode.LeafProbabilityIndex
+                    );
+
+                    double postPrunedError = PruneSetError();
+
+                    // Now if the accuracy has stayed the same or has improved, keep the change. Otherwise put back the old node.
+                    if (postPrunedError <= prePrunedError)
+                    {
+                        // Keep change
+                    }
+                    else
+                    {
+                        t.Nodes[i] = oldNode; // Revert change
+                    }
+                }
+            }
 
             /// <summary>
             /// Adds this observation to the populations matrix. See the documentation of Populations() for more info.
@@ -82,6 +133,17 @@ namespace Data_mining_project
                 }
 
                 return populations;
+            }
+
+            /// <summary>
+            /// Determine the accuracy of tree t on c.PruneSet
+            /// </summary>
+            double PruneSetError()
+            {
+                double[] prunePredictions = c.Model.Predict(c.PruneSet.Observations);
+
+                MeanSquaredErrorRegressionMetric metric = new MeanSquaredErrorRegressionMetric();
+                return metric.Error(c.PruneSet.Targets, prunePredictions);
             }
         };
     }
