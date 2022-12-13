@@ -2,12 +2,11 @@
 using SharpLearning.Containers.Matrices;
 using SharpLearning.CrossValidation.TrainingTestSplitters;
 
-namespace Data_mining_project
+namespace Data_mining_project.Splitters
 {
     /// <summary>
     /// Splitter that divides the sets into three partitions: for training, pruning and testing.
     /// </summary>
-    /// <typeparam name="T">The type that is split.</typeparam>
     public struct PruningSetSplitter
     {
         /// <summary>
@@ -26,11 +25,20 @@ namespace Data_mining_project
         /// </summary>
         /// <param name="trainPercentage">The percentage of data that should be used for training</param>
         /// <param name="prunePercentage">The percentage of data that should be used for pruning</param>
-        public PruningSetSplitter(double trainPercentage, double prunePercentage, int seed=42) 
+        public PruningSetSplitter(double trainPercentage, double prunePercentage, int seed = 42)
         {
-            if (trainPercentage <= 0d || trainPercentage >= 1d) throw new ArgumentException("Train percentage must be between 0 and 1");
-            if (prunePercentage <= 0d || prunePercentage >= 1d) throw new ArgumentException("Prune percentage must be between 0 and 1");
-            if (prunePercentage + trainPercentage >= 1d) throw new ArgumentException("The sum of the prune percentage and train percentage msust be between 0 and 1");
+            if (trainPercentage <= 0d || trainPercentage >= 1d)
+            {
+                throw new ArgumentException($"{nameof(trainPercentage)} must be between {0d} and {1d}, but is {trainPercentage}!");
+            }
+            if (prunePercentage <= 0d || prunePercentage >= 1d)
+            {
+                throw new ArgumentException($"{nameof(prunePercentage)} must be between {0d} and {1d}, but is {prunePercentage}!");
+            }
+            if (prunePercentage + trainPercentage >= 1d)
+            {
+                throw new ArgumentException($"The sum of {nameof(prunePercentage)} and {nameof(trainPercentage)} must be between {0d} and {1d}");
+            }
 
             this.trainingSplitter = new StratifiedTrainingTestIndexSplitter<double>(trainPercentage, seed);
             this.validationSplitter = new StratifiedTrainingTestIndexSplitter<double>(prunePercentage / (1 - trainPercentage), seed);
@@ -42,11 +50,11 @@ namespace Data_mining_project
         /// </summary>
         /// <param name="observations">The observations that should be split.</param>
         /// <param name="targets">The targets that should be splt.</param>
-        /// <returns>The split sets, contained in <see cref="PruningSetSplit"/>.</returns>
+        /// <returns>The split sets, contained in a <see cref="PruningSetSplit"/>.</returns>
         public PruningSetSplit SplitSet(F64Matrix observations, double[] targets)
         {
-            TrainingTestSetSplit trainSplit = this.trainingSplitter.SplitSet(observations, targets);
-            TrainingTestSetSplit pruneSplit = this.validationSplitter.SplitSet(trainSplit.TestSet.Observations, trainSplit.TestSet.Targets);
+            TrainingTestSetSplit trainSplit = trainingSplitter.SplitSet(observations, targets);
+            TrainingTestSetSplit pruneSplit = validationSplitter.SplitSet(trainSplit.TestSet.Observations, trainSplit.TestSet.Targets);
 
             ObservationTargetSet trainingSet = trainSplit.TrainingSet;
             ObservationTargetSet pruningSet = pruneSplit.TrainingSet;

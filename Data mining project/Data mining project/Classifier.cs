@@ -10,7 +10,7 @@ using SharpLearning.Containers;
 
 #region GenericNameSpaces
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+using Data_mining_project.Splitters;
 #endregion GenericNameSpaces
 
 namespace Data_mining_project
@@ -86,24 +86,28 @@ namespace Data_mining_project
         public double? TestError { get; private set; }
 
         /// <summary>
-        /// Action that handles post pruning when executed. <br/>
-        /// The default value of this field is the empty lambda, which does not do anything, but it might be assigned some other pruner from elsewhere.
+        /// The <see cref="IPruner"/> that handles post pruning when executed. <br/>
+        /// The default value of this field is null, which means that no post pruning will be done.
         /// </summary>
-        public Action<Classifier> PostPruner = (Classifier classifier) => { };
-
+        private readonly IPruner? PostPruner;
+        
         /// <summary>
         /// Constructs a new classifier, which will read from the path provided in <paramref name="parserPath"/>, 
         /// and consider the target column with the name <paramref name="targetColumn"/>.
         /// </summary>
         /// <param name="parserPath">The function which returns a textreader, to be used in the reading of the CSV.</param>
         /// <param name="targetColumn">The name of the column that contains the values to be predicted.</param>
-        public Classifier(Func<TextReader> parserPath, string targetColumn)
+        /// <param name="postPruner">The <see cref="IPruner"/> that will be used to prune the classifier, after it has been learned.</param>
+        public Classifier(Func<TextReader> parserPath, string targetColumn, IPruner? postPruner = null)
         {
             //TODO: i propose the creation of an enum that is passed along in the constructor, which specifies the pruning method to use.
             // then, we can internalize that, which leads to more abstraction.
             // Re: I don't really understand why you would want to use an enum if you can just pass the pruning Action directly.
+            // Re 2: we can do that, but then the actions need to be constant, which is not the case up until now.
+            //       that is to say, someone can change the pruning action after the classifier has been constructed, and create nasty bugs.
             this._parser = new CsvParser(parserPath);
             this._targetColumn = targetColumn;
+            this.PostPruner = postPruner;
         }
 
         /// <summary>
@@ -122,7 +126,8 @@ namespace Data_mining_project
             F64Matrix observations = this._parser.EnumerateRows(c => c != this._targetColumn)
                                                  .ToF64Matrix();
 
-            // If the optional parameter prunePercentage is non-default then we want to reserve data for pruning
+            // If the optional parameter prunePercentage is non-zero, we want to reserve data for pruning.
+            // To do so, we make a pruningset split, and then make a train/test split on the remaining data.
             if (prunePercentage > 0d)
             {
                 PruningSetSplitter splitter = new PruningSetSplitter(trainPercentage, prunePercentage);
@@ -131,6 +136,8 @@ namespace Data_mining_project
                 this.TestSet = pruningSetSplit.TestSet;
                 this.PruneSet = pruningSetSplit.PruningSet;
             }
+            // If the optional parameter prunePercentage is zero, we don't need to reserve data for pruning.
+            // So, we can just make a train/test split on the entire dataset.
             else
             {
                 TrainingTestIndexSplitter<double> splitter = new StratifiedTrainingTestIndexSplitter<double>(trainPercentage);
@@ -162,7 +169,7 @@ namespace Data_mining_project
 
             this.Model = treeLearner.Learn(this.TrainSet.Observations, this.TrainSet.Targets);
 
-            this.PostPruner(this);
+            this.PostPruner?.Prune(this);
         }
 
         /// <summary>
