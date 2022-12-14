@@ -147,10 +147,6 @@ namespace Data_mining_project.PostPruners
                 this.AddXToPopulations(t.Nodes[node.RightIndex], observation, target, populations, t);
                 return;
             }
-
-            //TODO: the exception message is not clear enough; what does it mean that the tree is degenerated? How can it be avoided?
-            //TODO 2: your if *and* your else have a return statement, so you can remove the throw statement. Unless you meant < instead of <= in the if statement?
-            throw new InvalidOperationException("The tree is degenerated.");
         }
         
         /// <summary>
