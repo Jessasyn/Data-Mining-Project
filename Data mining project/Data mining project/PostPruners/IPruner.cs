@@ -1,6 +1,6 @@
 ﻿using SharpLearning.DecisionTrees.Nodes;
 
-namespace Data_mining_project
+namespace Data_mining_project.PostPruners
 {
     /// <summary>
     /// The <see cref="IPruner"/> <see langword="interface"/> defines the functionality that a pruner class must implement.
