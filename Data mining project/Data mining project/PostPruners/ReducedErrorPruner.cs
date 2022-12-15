@@ -9,7 +9,7 @@ namespace Data_mining_project.PostPruners
     /// <summary>
     /// An implementation of <see cref="IPruner"/> which uses the reduced error pruning algorithm to prune a decision tree.
     /// </summary>
-    public sealed class ReducedErrorPruner : IPruner
+    public sealed class ReducedErrorPruner : PrunerBase
     {
         /// <summary>
         /// The metric that is used to measure the error of the tree in <see cref="PruneSetError(ClassificationDecisionTreeModel, ObservationTargetSet)"/>.
@@ -21,19 +21,19 @@ namespace Data_mining_project.PostPruners
         /// </summary>
         /// <param name="c"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Prune(Classifier c)
+        public override void Prune(IClassifier c)
         {
-            if (c.Model is not ClassificationDecisionTreeModel m)
+            if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {
                 throw new InvalidOperationException($"{nameof(c)} does not have a model, call {nameof(c.Learn)} first!");
             }
 
-            if (c.TrainSet is not ObservationTargetSet trainSet)
+            if (c.GetTrainingSet() is not ObservationTargetSet trainSet)
             {
                 throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for reduced error pruning!");
             }
 
-            if (c.PruneSet is not ObservationTargetSet pruneSet)
+            if (c.GetPruneSet() is not ObservationTargetSet pruneSet)
             {
                 throw new InvalidOperationException($"{nameof(c)} does not have a pruning data set, which is required for reduced error pruning!");
             }

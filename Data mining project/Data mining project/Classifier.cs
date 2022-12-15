@@ -19,7 +19,7 @@ namespace Data_mining_project
     /// <summary>
     /// A wrapper around functionality from SharpLearning, to make it easier to use.
     /// </summary>
-    public sealed class Classifier
+    public sealed class Classifier : IClassifier
     {
         /// <summary>
         /// The parser used for reading in datasets.
@@ -111,11 +111,6 @@ namespace Data_mining_project
             this.PostPruner = postPruner;
         }
 
-        /// <summary>
-        /// Reads in data from the path provided during class construction, splits it with the specified <paramref name="trainPercentage"/>, 
-        /// and stores the resulting sets in <see cref="TrainSet"/> and <see cref="TestSet"/>.
-        /// </summary>
-        /// <param name="trainPercentage">The percentage of data that should be put in the training set.</param>
         [MemberNotNull(nameof(this.TrainSet), nameof(this.TestSet))]
         public void ReadData(double trainPercentage, double prunePercentage=0d)
         {
@@ -148,12 +143,6 @@ namespace Data_mining_project
             }
         }
 
-        /// <summary>
-        /// Learns the <see cref="Model"/> of this classifier.
-        /// Changing any parameter fields will not have an effect after this function is called! <br/>
-        /// Also note that <see cref="ReadData(double)"/> <b>has</b> to be called before this function.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">If <see cref="TrainSet"/> is not initialized.</exception>
         [MemberNotNull(nameof(this.Model))]
         public void Learn()
         {
@@ -173,10 +162,6 @@ namespace Data_mining_project
             this.PostPruner?.Prune(this);
         }
 
-        /// <summary>
-        /// Predicts the test set, and reports the error measures. <br/>
-        /// This function does <b>not</b> work if <see cref="Learn"/> has not been called.
-        /// </summary>
         [MemberNotNull(nameof(this.TestError), nameof(this.VariableImportance))]
         public void Predict()
         {
@@ -193,5 +178,13 @@ namespace Data_mining_project
             this.VariableImportance = this.Model.GetVariableImportance(this._parser.EnumerateRows(c => c != this._targetColumn)
                                                                                    .First().ColumnNameToIndex);
         }
+
+        ClassificationDecisionTreeModel? IClassifier.GetModel() => this.Model;
+
+        ObservationTargetSet? IClassifier.GetPruneSet() => this.PruneSet;
+
+        ObservationTargetSet? IClassifier.GetTrainingSet() => this.TrainSet;
+
+        ObservationTargetSet? IClassifier.GetTestSet() => this.TestSet;
     }
 }
