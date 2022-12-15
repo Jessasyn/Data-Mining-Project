@@ -10,7 +10,12 @@ namespace Data_mining_project.PostPruners
     {
         public override void Prune(IClassifier c)
         {
-            throw new NotImplementedException();
+            
+        }
+
+        private double NiblettBrotkoError()
+        {
+            return 0d;
         }
     }
 }
