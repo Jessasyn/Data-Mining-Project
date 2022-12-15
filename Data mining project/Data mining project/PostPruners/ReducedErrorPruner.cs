@@ -59,16 +59,8 @@ namespace Data_mining_project.PostPruners
                     double mostFrequentClass = t.TargetNames[indexMostFrequent];
 
                     // Create a new node which is basically a copy of the old node but without childeren.
-                    t.Nodes[i] = new Node(
-                        -1, // Feature index is set to -1, this indicates that this is a leaf
-                        mostFrequentClass, // Most populous class
-                        -1, // The index of the left and right child shouldn't matter.
-                        -1,
-                        oldNode.NodeIndex,
-                        oldNode.LeafProbabilityIndex
-                    );
-
-
+                    this.PruneNode(i, mostFrequentClass, t);
+                    
                     // Now if the accuracy has stayed the same or has improved, keep the change. Otherwise, we put back the old node.
                     if (this.PruneSetError(m, pruneSet) > prePrunedError)
                     {
