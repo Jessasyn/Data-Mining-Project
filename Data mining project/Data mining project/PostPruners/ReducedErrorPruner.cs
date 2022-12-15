@@ -1,4 +1,5 @@
-﻿using SharpLearning.Containers;
+﻿using Data_mining_project.Extensions;
+using SharpLearning.Containers;
 using SharpLearning.Containers.Matrices;
 using SharpLearning.DecisionTrees.Models;
 using SharpLearning.DecisionTrees.Nodes;
@@ -41,7 +42,7 @@ namespace Data_mining_project.PostPruners
             BinaryTree t = m.Tree;
 
             // Matrix that stores the population of the classes at each node.
-            F64Matrix populations = this.Populations(trainSet, t);
+            F64Matrix populations = t.Populations(trainSet);
 
             for (int i = t.Nodes.Count - 1; i >= 0; i--)
             {
@@ -68,35 +69,6 @@ namespace Data_mining_project.PostPruners
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Calculates the populations of each node. <br/>
-        /// The population of a node is defined as the number of observations that pass through a given node.
-        /// We store this in a two-dimensional <see cref="F64Matrix"/>, 
-        /// where the first index is the node index and the second index is the class index.
-        /// </summary>
-        /// <param name="t">The binary tree to calculate the populations for.</param>
-        /// <param name="trainSet">The set of training data, that will be used to obtain the observations.</param>
-        /// <returns>The <see cref="F64Matrix"/> that contains the populations of <paramref name="t"/>.</returns>
-        private F64Matrix Populations(ObservationTargetSet trainSet, BinaryTree t)
-        {
-            int rows = t.Nodes.Count;
-            // This is the amount of classes that exist in the data set
-            // Each row in the matrix represents a node and each column is the amount of observations of this class that passed through this node.
-            int cols = t.TargetNames.Length;
-
-            F64Matrix populations = new(rows, cols);
-            Node rootTrainNode = t.Nodes[0];
-            for (int i = 0; i < trainSet.Targets.Length; i++)
-            {
-                // For every row in the training set, we descend the tree and increment the population of the node we end up at.
-                double[] Xi = trainSet.Observations.Row(i);
-                double yi = trainSet.Targets[i];
-                this.AddXToPopulations(rootTrainNode, Xi, yi, populations, t);
-            }
-
-            return populations;
         }
 
         /// <summary>
