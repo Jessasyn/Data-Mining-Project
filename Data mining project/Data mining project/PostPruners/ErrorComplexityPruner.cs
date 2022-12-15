@@ -1,4 +1,6 @@
-﻿using SharpLearning.Containers;
+﻿using Data_mining_project.Extensions;
+using SharpLearning.Containers;
+using SharpLearning.Containers.Matrices;
 using SharpLearning.DecisionTrees.Nodes;
 
 namespace Data_mining_project.PostPruners
@@ -10,14 +12,16 @@ namespace Data_mining_project.PostPruners
             throw new NotImplementedException();
         }
 
-        public double CalculateErrorCost(double[] observations, Node node, ObservationTargetSet testSet)
+        public double NodeErrorCost(BinaryTree t, ObservationTargetSet trainSet, Node node)
         {
-            //R(t) = \frac{no of examples misclassified in node t \cdot no of examples in node t}{no of examples in node t \cdot no of totalexamples}
-            //R(t) = \frac{no of examples misclassified in node t}{no of total examples}
-            int totalExamples = testSet.Targets.Length;
+            int totalExamples = trainSet.Targets.Length;
 
-            //TODO: take populations; 
-            return 0d;
+            F64Matrix populations = t.Populations(trainSet);
+            double[] nodeClasses = populations.Row(node.NodeIndex);
+
+            double misclassificationcount = nodeClasses.Sum() - nodeClasses.Where(v => v.Equals(node.Value)).Count();
+            
+            return misclassificationcount / totalExamples;
         }
     }
 }
