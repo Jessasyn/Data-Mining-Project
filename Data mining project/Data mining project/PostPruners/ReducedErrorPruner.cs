@@ -70,48 +70,6 @@ namespace Data_mining_project.PostPruners
                 }
             }
         }
-
-        /// <summary>
-        /// Increments the population matrix for the provided node. <br/>
-        /// Then, descends further into the tree, depending on the feature of the node and the value of the observation. <br/>
-        /// This method is based on <see cref="BinaryTree"/>, which can also be found at
-        /// <seealso href=" https://github.com/mdabros/SharpLearning/blob/3f6063fad8886b09c5715c8713541045be7560b9/src/SharpLearning.DecisionTrees/Nodes/BinaryTree.cs"/>.
-        /// </summary>
-        /// <param name="node">The <see cref="Node"/> to start at.</param>
-        /// <param name="observation">The observation values to use.</param>
-        /// <param name="populations">The <see cref="F64Matrix"/> to store the results in.</param>
-        /// <param name="t">The <see cref="BinaryTree"/> that <paramref name="node"/> belongs to.</param>
-        /// <param name="target">The target value for the <paramref name="observation"/>.</param>
-        private void AddXToPopulations(Node node, double[] observation, double target, F64Matrix populations, BinaryTree t)
-        {
-            // The node is a leaf node, so we don't need to do anything.
-            if (node.FeatureIndex == -1.0)
-            {
-                return;
-            }
-
-            // This node is not an empty leaf, so we must update the populations matrix.
-            // First, we determine the array index that should be incremented.
-            int rowIndex = node.NodeIndex;
-
-            int colIndex = Array.IndexOf(t.TargetNames, target);
-
-            // Having determined this, we now add one to the count of this class to the populations matrix.
-            populations[rowIndex, colIndex] = populations[rowIndex, colIndex] + 1;
-
-            //If this is the case, the tree would choose the left node, so we need to descend into the left node.
-            if (observation[node.FeatureIndex] <= node.Value)
-            {
-                this.AddXToPopulations(t.Nodes[node.LeftIndex], observation, target, populations, t);
-                return;
-            }
-            //And otherwise, we have to descend into the right node.
-            else
-            {
-                this.AddXToPopulations(t.Nodes[node.RightIndex], observation, target, populations, t);
-                return;
-            }
-        }
         
         /// <summary>
         /// Determines the accuracy of <see cref="ClassificationDecisionTreeModel"/> <paramref name="m"/> 

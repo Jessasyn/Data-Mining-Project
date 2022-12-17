@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpLearning.DecisionTrees.Nodes;
+using Data_mining_project.Extensions;
 
 namespace Data_mining_project.PostPruners
 {
@@ -21,12 +22,39 @@ namespace Data_mining_project.PostPruners
     {
         public override void Prune(IClassifier c)
         {
-            
+            if (c.GetModel() is not ClassificationDecisionTreeModel m)
+            {
+                throw new InvalidOperationException($"{nameof(c)} does not have a model, call {nameof(c.Learn)} first!");
+            }
+
+            if (c.GetTrainingSet() is not ObservationTargetSet trainSet)
+            {
+                throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for minimum error pruning!");
+            }
+
+            BinaryTree t = m.Tree;
+
+            // Matrix that stores the population of the classes at each node.
+            F64Matrix populations = t.Populations(trainSet);
         }
 
-        private double NiblettBrotkoError(Node t)
+        /// <summary>
+        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> using populations matrix <paramref name="populations"/>
+        /// </summary>
+        /// <param name="k">Total number of classes present in the population</param>
+        /// <param name="t"></param>
+        /// <param name="populations"></param>
+        /// <returns>Niblett-Brotko Error E(<paramref name="t"/>)</returns>
+        private double NiblettBrotkoError(int k, Node t, F64Matrix populations)
         {
-            F64Matrix populations = populations();
+            double[] nodePopulation = populations.Row(t.FeatureIndex);
+            double nt = nodePopulation.Sum();
+            double res = 0d;
+            foreach (double ntc in nodePopulation)
+            {
+                res += (nt - ntc + k - 1) / (nt + k);
+            }
+            return res;
         }
     }
 }
