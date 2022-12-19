@@ -54,10 +54,7 @@ namespace Data_mining_project.PostPruners
                     double prePrunedError = this.PruneSetError(m, pruneSet);
 
                     // Find the most frequent class of this node using the populations matrix
-                    double[] nodeClasses = populations.Row(i);
-                    double frequencyOfmostFrequentClass = nodeClasses.Max();
-                    int indexMostFrequent = Array.IndexOf(nodeClasses, frequencyOfmostFrequentClass);
-                    double mostFrequentClass = t.TargetNames[indexMostFrequent];
+                    double mostFrequentClass = t.MostFrequentClass(i, populations);
 
                     // Create a new node which is basically a copy of the old node but without childeren.
                     this.PruneNode(i, mostFrequentClass, t);

@@ -9,8 +9,8 @@ namespace Data_Mining_Project
     {
         public static void Main()
         {
-            Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new ReducedErrorPruner());
-            c.ReadData(0.5, 0.3);
+            Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new MinimumErrorPruner());
+            c.ReadData(0.6);
             c.Learn();
             c.Predict();
 
