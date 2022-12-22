@@ -8,6 +8,7 @@ using SharpLearning.Containers;
 #region DataminingNameSpaces
 using Data_mining_project.Extensions;
 #endregion DataminingNameSpaces
+
 namespace Data_mining_project.PostPruners
 {
     public sealed class MinimumErrorPruner : PrunerBase
@@ -70,8 +71,7 @@ namespace Data_mining_project.PostPruners
             double[] nodePopulation = populations.Row(t.FeatureIndex);
             double nt = nodePopulation.Sum();
 
-            List<Node> leafNodes = new();
-            GetLeaves(tree, tree.Nodes[t.FeatureIndex], leafNodes);
+            List<Node> leafNodes = tree.GetLeaves(tree.Nodes[t.FeatureIndex]);
 
             // Get the prediction of every leaf and add up the predictions.
             double[] subTreePredictions = new double[k];
@@ -86,23 +86,6 @@ namespace Data_mining_project.PostPruners
             double ntc = subTreePredictions.Max();
 
             return (nt - ntc + k - 1) / (nt + k);
-        }
-
-        //TODO: this seems like something that would work well as an extension method? or is it not used anywhere else?
-        // also, its probably easier if you use a while loop that loops over a list of indices to check for leaves,
-        // so you can just return the list instead of using a list as argument.
-        private static void GetLeaves(BinaryTree tree, Node node, List<Node> leafNodes)
-        {
-            // The node is a leaf node, so we don't need to do anything.
-            if (node.FeatureIndex == -1.0)
-            {
-                leafNodes.Add(node);
-            }
-            else
-            {
-                GetLeaves(tree, tree.Nodes[node.RightIndex], leafNodes);
-                GetLeaves(tree, tree.Nodes[node.LeftIndex], leafNodes);
-            }
         }
     }
 }

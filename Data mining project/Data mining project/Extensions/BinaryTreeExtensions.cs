@@ -116,5 +116,29 @@ namespace Data_mining_project.Extensions
                         oldNode.LeafProbabilityIndex
                     );
         }
+
+        /// <summary>
+        /// Obtains all leaves from the subtree rooted at <paramref name="node"/>.
+        /// </summary>
+        /// <param name="tree">The <see cref="BinaryTree"/> in which <paramref name="node"/> is contained.</param>
+        /// <param name="node">The root of the subtree, for which all leaves will be returned.</param>
+        /// <returns>A <see cref="List{T}"/>, containing all leaves that are in the subtree rooted at <paramref name="node"/>.</returns>
+        public static List<Node> GetLeaves(this BinaryTree tree, Node node)
+        {
+            List<Node> res = new List<Node>();
+
+            // The node is a leaf node, so we only need to add it to the list.
+            if (node.FeatureIndex == -1.0)
+            {
+                res.Add(node);
+            }
+            //The node is not a leaf node, so we continue on to its children.
+            else
+            {
+                res.AddRange(GetLeaves(tree, tree.Nodes[node.RightIndex]));
+                res.AddRange(GetLeaves(tree, tree.Nodes[node.LeftIndex]));
+            }
+            return res;
+        }
     }
 }
