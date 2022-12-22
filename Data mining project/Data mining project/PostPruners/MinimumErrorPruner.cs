@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpLearning.DecisionTrees.Nodes;
 using Data_mining_project.Extensions;
+#endregion DataminingNameSpaces
 
 namespace Data_mining_project.PostPruners
 {
@@ -76,8 +77,7 @@ namespace Data_mining_project.PostPruners
             double[] nodePopulation = populations.Row(t.FeatureIndex);
             double nt = nodePopulation.Sum();
 
-            List<Node> leafNodes = new();
-            getLeaves(tree, tree.Nodes[t.FeatureIndex], leafNodes);
+            List<Node> leafNodes = tree.GetLeaves(tree.Nodes[t.FeatureIndex]);
 
             // Get the prediction of every leaf and add up the predictions.
             double[] subTreePredictions = new double[k];
