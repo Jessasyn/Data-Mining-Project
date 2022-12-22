@@ -8,6 +8,7 @@ using SharpLearning.InputOutput.Csv;
 using SharpLearning.Containers;
 #endregion SharpLearningNameSpaces
 
+#region DataminingNameSpaces
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,14 +48,14 @@ namespace Data_mining_project.PostPruners
                     if (PrunedNiblettBrotkoError(t, oldNode, populations) <= UnprunedNiblettBrotkoError(t, oldNode, populations))
                     {
                         double mostFrequentClass = t.MostFrequentClass(i, populations);
-                        this.PruneNode(i, mostFrequentClass, t);
+                        t.PruneNode(i, mostFrequentClass);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> using populations matrix <paramref name="populations"/>, 
+        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> in tree <paramref name="tree"> using populations matrix <paramref name="populations"/>, 
         /// if that node is pruned into a leaf with its most popular class
         /// </summary>
         /// <param name="k">Total number of classes present in the population</param>
@@ -71,6 +72,14 @@ namespace Data_mining_project.PostPruners
             return (nt - ntc + k - 1) / (nt + k);
         }
 
+        /// <summary>
+        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> in tree <paramref name="tree"> using populations matrix <paramref name="populations"/>, 
+        /// if that node is NOT pruned into a leaf with its most popular class
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <param name="t"></param>
+        /// <param name="populations"></param>
+        /// <returns></returns>
         private double UnprunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {
             int k = tree.TargetNames.Length;
@@ -92,25 +101,6 @@ namespace Data_mining_project.PostPruners
             double ntc = subTreePredictions.Max();
 
             return (nt - ntc + k - 1) / (nt + k);
-        }
-        /// <summary>
-        /// store all leaves of <paramref name="tree"/> in list <paramref name="leafNodes"/>.
-        /// </summary>
-        /// <param name="tree"></param>
-        /// <param name="node"></param>
-        /// <param name="leafNodes"></param>
-        private void getLeaves(BinaryTree tree, Node node, List<Node> leafNodes)
-        {
-            // The node is a leaf node, so we don't need to do anything.
-            if (node.FeatureIndex == -1.0)
-            {
-                leafNodes.Add(node);
-            }
-            else
-            {
-                getLeaves(tree, tree.Nodes[node.RightIndex], leafNodes);
-                getLeaves(tree, tree.Nodes[node.LeftIndex], leafNodes);
-            }
         }
     }
 }
