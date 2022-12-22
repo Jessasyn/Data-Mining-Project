@@ -15,8 +15,8 @@ namespace Data_mining_project.PostPruners
         /// <summary>
         /// The metric that is used to measure the error of the tree in <see cref="PruneSetError(ClassificationDecisionTreeModel, ObservationTargetSet)"/>.
         /// </summary>
-        private readonly MeanSquaredErrorRegressionMetric _metric = new MeanSquaredErrorRegressionMetric();
-        
+        public MeanSquaredErrorRegressionMetric metric = new MeanSquaredErrorRegressionMetric();
+
         /// <summary>
         /// Prunes the <paramref name="c"/> using the reduced error pruning algorithm.
         /// </summary>
@@ -77,7 +77,7 @@ namespace Data_mining_project.PostPruners
         {
             double[] prunePredictions = m.Predict(pruneSet.Observations);
 
-            return this._metric.Error(pruneSet.Targets, prunePredictions);
+            return this.metric.Error(pruneSet.Targets, prunePredictions);
         }
     }
 }
