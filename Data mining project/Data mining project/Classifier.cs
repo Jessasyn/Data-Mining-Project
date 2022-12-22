@@ -10,9 +10,12 @@ using SharpLearning.Containers;
 
 #region GenericNameSpaces
 using System.Diagnostics.CodeAnalysis;
+#endregion GenericNameSpaces
+
+#region DataminingNameSpaces
 using Data_mining_project.Splitters;
 using Data_mining_project.PostPruners;
-#endregion GenericNameSpaces
+#endregion DataminingNameSpaces
 
 namespace Data_mining_project
 {

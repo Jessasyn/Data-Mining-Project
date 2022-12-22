@@ -1,12 +1,13 @@
 ﻿#region SharpLearningNameSpaces
 using SharpLearning.DecisionTrees.Models;
+using SharpLearning.DecisionTrees.Nodes;
 using SharpLearning.Containers.Matrices;
 using SharpLearning.Containers;
 #endregion SharpLearningNameSpaces
 
-using SharpLearning.DecisionTrees.Nodes;
+#region DataminingNameSpaces
 using Data_mining_project.Extensions;
-
+#endregion DataminingNameSpaces
 namespace Data_mining_project.PostPruners
 {
     public sealed class MinimumErrorPruner : PrunerBase
@@ -38,7 +39,7 @@ namespace Data_mining_project.PostPruners
                     if (PrunedNiblettBrotkoError(t, oldNode, populations) <= UnprunedNiblettBrotkoError(t, oldNode, populations))
                     {
                         double mostFrequentClass = t.MostFrequentClass(i, populations);
-                        this.PruneNode(i, mostFrequentClass, t);
+                        t.PruneNode(i, mostFrequentClass);
                     }
                 }
             }
@@ -63,14 +64,14 @@ namespace Data_mining_project.PostPruners
         }
 
         //TODO: missing summary
-        private double UnprunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
+        private static double UnprunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {
             int k = tree.TargetNames.Length;
             double[] nodePopulation = populations.Row(t.FeatureIndex);
             double nt = nodePopulation.Sum();
 
             List<Node> leafNodes = new();
-            getLeaves(tree, tree.Nodes[t.FeatureIndex], leafNodes);
+            GetLeaves(tree, tree.Nodes[t.FeatureIndex], leafNodes);
 
             // Get the prediction of every leaf and add up the predictions.
             double[] subTreePredictions = new double[k];
@@ -90,7 +91,7 @@ namespace Data_mining_project.PostPruners
         //TODO: this seems like something that would work well as an extension method? or is it not used anywhere else?
         // also, its probably easier if you use a while loop that loops over a list of indices to check for leaves,
         // so you can just return the list instead of using a list as argument.
-        private void getLeaves(BinaryTree tree, Node node, List<Node> leafNodes)
+        private static void GetLeaves(BinaryTree tree, Node node, List<Node> leafNodes)
         {
             // The node is a leaf node, so we don't need to do anything.
             if (node.FeatureIndex == -1.0)
@@ -99,8 +100,8 @@ namespace Data_mining_project.PostPruners
             }
             else
             {
-                getLeaves(tree, tree.Nodes[node.RightIndex], leafNodes);
-                getLeaves(tree, tree.Nodes[node.LeftIndex], leafNodes);
+                GetLeaves(tree, tree.Nodes[node.RightIndex], leafNodes);
+                GetLeaves(tree, tree.Nodes[node.LeftIndex], leafNodes);
             }
         }
     }

@@ -20,8 +20,8 @@ namespace Data_mining_project.PostPruners
         /// <summary>
         /// Prunes the <paramref name="c"/> using the reduced error pruning algorithm.
         /// </summary>
-        /// <param name="c"></param>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <param name="c">The classifier to prune.</param>
+        /// <exception cref="InvalidOperationException">If the state does not allow for pruning to occur.</exception>
         public override void Prune(IClassifier c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
@@ -53,11 +53,11 @@ namespace Data_mining_project.PostPruners
                 {
                     double prePrunedError = this.PruneSetError(m, pruneSet);
 
-                    // Find the most frequent class of this node using the populations matrix
+                    // Find the most frequent class of this node using the populations matrix.
                     double mostFrequentClass = t.MostFrequentClass(i, populations);
 
-                    // Create a new node which is basically a copy of the old node but without childeren.
-                    this.PruneNode(i, mostFrequentClass, t);
+                    // Create a new node which, which is identical to the old node, but with all of its children removed.
+                    t.PruneNode(i, mostFrequentClass);
                     
                     // Now if the accuracy has stayed the same or has improved, keep the change. Otherwise, we put back the old node.
                     if (this.PruneSetError(m, pruneSet) > prePrunedError)

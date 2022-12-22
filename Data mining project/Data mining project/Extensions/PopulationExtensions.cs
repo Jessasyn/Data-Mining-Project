@@ -1,10 +1,15 @@
-﻿using SharpLearning.Containers.Matrices;
-using SharpLearning.Containers;
+﻿#region SharpLearningNameSpaces
+using SharpLearning.Containers.Matrices;
 using SharpLearning.DecisionTrees.Nodes;
+using SharpLearning.Containers;
+#endregion SharpLearningNameSpaces
 
 namespace Data_mining_project.Extensions
 {
-    public static class PopulationExtensions
+    /// <summary>
+    /// The class that contains several extension methods to the <see cref="BinaryTree"/> class.
+    /// </summary>
+    public static class BinaryTreeExtensions
     {
         /// <summary>
         /// Calculates the populations of each node. <br/>
@@ -90,6 +95,26 @@ namespace Data_mining_project.Extensions
                 populations.AddXToPopulations(t.Nodes[node.RightIndex], observation, target, t);
                 return;
             }
+        }
+
+        /// <summary>
+        /// Prunes a single node from the <see cref="BinaryTree"/> <paramref name="t"/>.
+        /// </summary>
+        /// <param name="index">The index of the node to prune.</param>
+        /// <param name="class">The leaf to change this node to.</param>
+        /// <param name="t">The tree to prune from.</param>
+        public static void PruneNode(this BinaryTree t, int index, double @class)
+        {
+            Node oldNode = t.Nodes[index];
+
+            t.Nodes[index] = new Node(
+                        -1, // Feature index is set to -1, this indicates that this is a leaf
+                        @class, // Most populous class
+                        -1, // The index of the left and right child shouldn't matter.
+                        -1,
+                        oldNode.NodeIndex,
+                        oldNode.LeafProbabilityIndex
+                    );
         }
     }
 }
