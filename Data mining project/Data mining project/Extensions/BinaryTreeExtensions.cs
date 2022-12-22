@@ -56,6 +56,15 @@ namespace Data_mining_project.Extensions
         }
 
         /// <summary>
+        /// An overload for <see cref="MostFrequentClass(BinaryTree, Node, F64Matrix)"/>. Calls the method with the node index of <paramref name="n"/>.
+        /// </summary>
+        /// <param name="t">The binary tree to which the <paramref name="populations"/> matrix belongs.</param>
+        /// <param name="i">The node whose index will be used.</param>
+        /// <param name="populations">The populations matrix associated to the binary tree<paramref name="t"/>.</param>
+        /// <returns>A <see cref="double"/>, representing the most frequent class at the node with index <paramref name="i"/>.</returns>
+        public static double MostFrequentClass(this BinaryTree t, Node n, F64Matrix populations) => t.MostFrequentClass(n.NodeIndex, populations);
+
+        /// <summary>
         /// Increments the population matrix for the provided node. <br/>
         /// Then, descends further into the tree, depending on the feature of the node and the value of the observation. <br/>
         /// This method is based on <see cref="BinaryTree"/>, which can also be found at
@@ -138,6 +147,33 @@ namespace Data_mining_project.Extensions
                 res.AddRange(GetLeaves(tree, tree.Nodes[node.RightIndex]));
                 res.AddRange(GetLeaves(tree, tree.Nodes[node.LeftIndex]));
             }
+            return res;
+        }
+
+        /// <summary>
+        /// Returns all nodes in the current tree, except the root.
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <returns></returns>
+        public static List<Node> GetChildren(this BinaryTree tree) => tree.GetChildren(tree.Nodes[0]);
+        
+        /// <summary>
+        /// Returns all chilldren from the current node.
+        /// </summary>
+        /// <param name="tree"></param>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static List<Node> GetChildren(this BinaryTree tree, Node node)
+        {
+            List<Node> res = new List<Node> { node };
+
+            //If there are still chidren, we add them too.
+            if (node.FeatureIndex != -1.0)
+            {
+                res.AddRange(tree.GetChildren(tree.Nodes[node.LeftIndex]));
+                res.AddRange(tree.GetChildren(tree.Nodes[node.RightIndex]));
+            }
+            
             return res;
         }
     }

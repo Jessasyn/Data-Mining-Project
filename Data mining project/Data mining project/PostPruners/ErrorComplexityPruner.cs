@@ -3,20 +3,80 @@ using Data_mining_project.Extensions;
 #endregion DataminingNameSpaces
 
 #region SharpLearningNameSpaces
-using SharpLearning.Containers;
+using SharpLearning.DecisionTrees.Models;
 using SharpLearning.Containers.Matrices;
 using SharpLearning.DecisionTrees.Nodes;
+using SharpLearning.Metrics.Regression;
+using SharpLearning.Containers;
 #endregion SharpLearningNameSpaces
 
 namespace Data_mining_project.PostPruners
 {
     public sealed class ErrorComplexityPruner : PrunerBase
     {
+        /// <summary>
+        /// The metric that is used to measure the error of the tree in <see cref="Prune(IClassifier)"/>.
+        /// </summary>
+        private readonly MeanSquaredErrorRegressionMetric _metric = new MeanSquaredErrorRegressionMetric();
+
+        /// <summary>
+        /// Prunes the decision tree according to the rules of error complexity pruning.
+        /// </summary>
+        /// <param name="c">The classifier to use pruning on.</param>
+        /// <exception cref="InvalidOperationException">If the state does not permit pruning.</exception>
         public override void Prune(IClassifier c)
         {
+            if (c.GetModel() is not ClassificationDecisionTreeModel m)
+            {
+                throw new InvalidOperationException($"{nameof(c)} does not have a model, call {nameof(c.Learn)} first!");
+            }
 
-            throw new NotImplementedException();
+            if(c.GetTrainingSet() is not ObservationTargetSet trainSet)
+            {
+                throw new InvalidOperationException($"{nameof(c)} does not have a training set, which is required for the {nameof(ErrorComplexityPruner)}!");
+            }
+
+            List<List<Node>> forest = new List<List<Node>> { };
+
+            BinaryTree t = m.Tree;
+
+            forest.Add(t.Nodes.ToList());
+            F64Matrix populations = t.Populations(trainSet);
+
+            int childCount = t.GetChildren().Count;
+
+            while (childCount > 3)
+            {
+                Node pruneNode = t.Nodes.Select(node => (node, ErrorComplexity(t, trainSet, node)))
+                                        .MinBy(n => n.Item2).node;
+
+                double nodeClass = t.MostFrequentClass(pruneNode, populations);
+                t.PruneNode(pruneNode.NodeIndex, nodeClass);
+
+                forest.Add(m.Tree.Nodes.ToList());
+
+                childCount = t.GetChildren().Count;
+            }
+
+            List<double> accuracies = new List<double>();
+            
+            foreach(List<Node> tree in forest)
+            {
+                if (tree.Count >= 1)
+                {
+                    t.Nodes.Clear();
+                    t.Nodes.AddRange(tree);
+                    double[] pred = m.Predict(trainSet.Observations);
+                    accuracies.Add(this._metric.Error(trainSet.Targets, pred));
+                }
+            }
+
+            List<Node> bestTree = forest[accuracies.IndexOf(accuracies.Max())];
+
+            t.Nodes.Clear();
+            t.Nodes.AddRange(bestTree);
         }
+
 
         /// <summary>
         /// Calculates the error complexity of <paramref name="node"/>.

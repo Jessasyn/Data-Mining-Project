@@ -1,10 +1,7 @@
 ﻿#region SharpLearningNameSpaces
-using SharpLearning.CrossValidation.TrainingTestSplitters;
-using SharpLearning.DecisionTrees.Learners;
 using SharpLearning.DecisionTrees.Models;
+using SharpLearning.DecisionTrees.Nodes;
 using SharpLearning.Containers.Matrices;
-using SharpLearning.Metrics.Regression;
-using SharpLearning.InputOutput.Csv;
 using SharpLearning.Containers;
 #endregion SharpLearningNameSpaces
 
@@ -31,7 +28,7 @@ namespace Data_mining_project.PostPruners
 
             if (c.GetTrainingSet() is not ObservationTargetSet trainSet)
             {
-                throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for minimum error pruning!");
+                throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for the {nameof(MinimumErrorPruner)}!");
             }
 
             BinaryTree t = m.Tree;
