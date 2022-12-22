@@ -62,7 +62,7 @@ namespace Data_mining_project.PostPruners
         /// <param name="t"></param>
         /// <param name="populations"></param>
         /// <returns>Niblett-Brotko Error E(<paramref name="t"/>)</returns>
-        private double PrunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
+        private static double PrunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {
             int k = tree.TargetNames.Length;
             double[] nodePopulation = populations.Row(t.FeatureIndex);
@@ -80,7 +80,7 @@ namespace Data_mining_project.PostPruners
         /// <param name="t"></param>
         /// <param name="populations"></param>
         /// <returns></returns>
-        private double UnprunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
+        private static double UnprunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {
             int k = tree.TargetNames.Length;
             double[] nodePopulation = populations.Row(t.FeatureIndex);
