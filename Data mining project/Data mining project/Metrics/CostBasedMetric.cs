@@ -28,15 +28,16 @@ namespace Data_mining_project.Metrics
             {
                 var targetValue = targets[i];
                 var estimate = predictions[i];
-                var error = Math.Abs(targetValue - estimate);
-                meanSquareError += error * error;
+                double error = 0d;
+                if (targetValue != estimate)
+                {
+
+                }
+                meanSquareError += error;
             }
             meanSquareError *= (1.0 / targets.Length);
 
             return meanSquareError;
-
-
-            return res;
         }
     }
 }
