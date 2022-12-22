@@ -36,12 +36,12 @@ namespace Data_mining_project.Extensions
         }
 
         /// <summary>
-        /// Find the most frequent class of the node with node number <paramref name="i"/> using the <paramref name="populations"/> matrix
+        /// Find the most frequent class of the node with node number <paramref name="i"/> using the <paramref name="populations"/> matrix.
         /// </summary>
-        /// <param name="t"></param>
-        /// <param name="i"></param>
-        /// <param name="populations"></param>
-        /// <returns></returns>
+        /// <param name="t">The binary tree to which the <paramref name="populations"/> matrix belongs.</param>
+        /// <param name="i">The index of the <see cref="Node"/> to get the most frequent class for.</param>
+        /// <param name="populations">The populations matrix associated to the binary tree<paramref name="t"/>.</param>
+        /// <returns>A <see cref="double"/>, representing the most frequent class at the node with index <paramref name="i"/>.</returns>
         public static double MostFrequentClass(this BinaryTree t, int i, F64Matrix populations)
         {
             double[] nodeClasses = populations.Row(i);

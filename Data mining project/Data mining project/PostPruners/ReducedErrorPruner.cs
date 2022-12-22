@@ -31,12 +31,12 @@ namespace Data_mining_project.PostPruners
 
             if (c.GetTrainingSet() is not ObservationTargetSet trainSet)
             {
-                throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for reduced error pruning!");
+                throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for the {nameof(ReducedErrorPruner)}!");
             }
 
             if (c.GetPruneSet() is not ObservationTargetSet pruneSet)
             {
-                throw new InvalidOperationException($"{nameof(c)} does not have a pruning data set, which is required for reduced error pruning!");
+                throw new InvalidOperationException($"{nameof(c)} does not have a pruning data set, which is required for the {nameof(ReducedErrorPruner)}!");
             }
 
             BinaryTree t = m.Tree;

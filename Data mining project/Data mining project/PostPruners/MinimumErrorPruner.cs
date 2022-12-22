@@ -1,18 +1,9 @@
 ﻿#region SharpLearningNameSpaces
-using SharpLearning.CrossValidation.TrainingTestSplitters;
-using SharpLearning.DecisionTrees.Learners;
 using SharpLearning.DecisionTrees.Models;
 using SharpLearning.Containers.Matrices;
-using SharpLearning.Metrics.Regression;
-using SharpLearning.InputOutput.Csv;
 using SharpLearning.Containers;
 #endregion SharpLearningNameSpaces
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpLearning.DecisionTrees.Nodes;
 using Data_mining_project.Extensions;
 
@@ -20,6 +11,7 @@ namespace Data_mining_project.PostPruners
 {
     public sealed class MinimumErrorPruner : PrunerBase
     {
+        //TODO override this to explain what it does, or alternatively add more comments in this function.
         public override void Prune(IClassifier c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
@@ -29,7 +21,7 @@ namespace Data_mining_project.PostPruners
 
             if (c.GetTrainingSet() is not ObservationTargetSet trainSet)
             {
-                throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for minimum error pruning!");
+                throw new InvalidOperationException($"{nameof(c)} does not have a training data set, which is required for the {nameof(MinimumErrorPruner)}!");
             }
 
             BinaryTree t = m.Tree;
@@ -54,13 +46,13 @@ namespace Data_mining_project.PostPruners
 
         /// <summary>
         /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> using populations matrix <paramref name="populations"/>, 
-        /// if that node is pruned into a leaf with its most popular class
+        /// if that node is pruned into a leaf with its most popular class.
         /// </summary>
-        /// <param name="k">Total number of classes present in the population</param>
+        /// <param name="k">Total number of classes present in the population</param> //TODO: misreferenced variable? k doesnt exist
         /// <param name="t"></param>
         /// <param name="populations"></param>
         /// <returns>Niblett-Brotko Error E(<paramref name="t"/>)</returns>
-        private double PrunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
+        private static double PrunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {
             int k = tree.TargetNames.Length;
             double[] nodePopulation = populations.Row(t.FeatureIndex);
@@ -70,6 +62,7 @@ namespace Data_mining_project.PostPruners
             return (nt - ntc + k - 1) / (nt + k);
         }
 
+        //TODO: missing summary
         private double UnprunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {
             int k = tree.TargetNames.Length;
@@ -94,6 +87,9 @@ namespace Data_mining_project.PostPruners
             return (nt - ntc + k - 1) / (nt + k);
         }
 
+        //TODO: this seems like something that would work well as an extension method? or is it not used anywhere else?
+        // also, its probably easier if you use a while loop that loops over a list of indices to check for leaves,
+        // so you can just return the list instead of using a list as argument.
         private void getLeaves(BinaryTree tree, Node node, List<Node> leafNodes)
         {
             // The node is a leaf node, so we don't need to do anything.

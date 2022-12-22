@@ -1,6 +1,4 @@
-﻿using SharpLearning.Containers;
-using SharpLearning.DecisionTrees.Models;
-using SharpLearning.DecisionTrees.Nodes;
+﻿using SharpLearning.DecisionTrees.Nodes;
 
 namespace Data_mining_project.PostPruners
 {

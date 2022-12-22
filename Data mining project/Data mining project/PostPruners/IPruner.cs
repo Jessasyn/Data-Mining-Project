@@ -20,5 +20,6 @@ namespace Data_mining_project.PostPruners
         /// <param name="class">The leaf to change this node to.</param>
         /// <param name="t">The tree to prune from.</param>
         public void PruneNode(int index, double @class, BinaryTree t);
+        //TODO: this really should be private, so probably lift it to the prunerbase class and remove it from here...
     }
 }
