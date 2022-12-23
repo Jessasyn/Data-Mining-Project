@@ -6,12 +6,6 @@ using SharpLearning.Containers;
 #endregion SharpLearningNameSpaces
 
 #region DataminingNameSpaces
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpLearning.DecisionTrees.Nodes;
 using Data_mining_project.Extensions;
 #endregion DataminingNameSpaces
 
@@ -70,7 +64,7 @@ namespace Data_mining_project.PostPruners
         }
 
         /// <summary>
-        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> in tree <paramref name="tree"> using populations matrix <paramref name="populations"/>, 
+        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> in tree <paramref name="tree"/> using populations matrix <paramref name="populations"/>, 
         /// if that node is NOT pruned into a leaf with its most popular class
         /// </summary>
         /// <param name="tree"></param>
