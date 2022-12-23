@@ -34,7 +34,7 @@ namespace Data_mining_project.PostPruners
             base.Prune(c);
         }
         
-        public sealed override double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
+        protected sealed override double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
         {
             double[] prunePredictions = m.Predict(pruneSet.Observations);
             return this._metric.Error(prunePredictions, pruneSet.Targets, this._costs);

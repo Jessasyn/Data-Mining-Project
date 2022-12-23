@@ -78,7 +78,7 @@ namespace Data_mining_project.PostPruners
         /// on the <see cref="ObservationTargetSet"/> <paramref name="pruneSet"/>, and returns that as a <see cref="double"/>.
         /// </summary>
         /// <returns>A <see cref="double"/>, which is the error rate that is computed.</returns>
-        public virtual double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
+        protected virtual double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
         {
             double[] prunePredictions = m.Predict(pruneSet.Observations);
 
