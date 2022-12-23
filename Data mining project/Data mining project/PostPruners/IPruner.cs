@@ -1,4 +1,6 @@
-﻿using SharpLearning.DecisionTrees.Nodes;
+﻿#region SharpLearningNameSpaces
+using SharpLearning.DecisionTrees.Nodes;
+#endregion SharpLearningNameSpaces
 
 namespace Data_mining_project.PostPruners
 {

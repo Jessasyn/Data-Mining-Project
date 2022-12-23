@@ -1,6 +1,6 @@
 ﻿#region DataMiningNameSpaces
-using Data_mining_project;
 using Data_mining_project.PostPruners;
+using Data_mining_project;
 #endregion DataMiningNameSpaces
 
 namespace Data_Mining_Project

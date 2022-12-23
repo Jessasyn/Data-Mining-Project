@@ -1,9 +1,14 @@
-﻿using Data_mining_project.Extensions;
-using SharpLearning.Containers;
+﻿#region DataMiningNameSpaces
+using Data_mining_project.Extensions;
+#endregion DataMiningNameSpaces
+
+#region SharpLearningNameSpaces
 using SharpLearning.Containers.Matrices;
 using SharpLearning.DecisionTrees.Models;
 using SharpLearning.DecisionTrees.Nodes;
 using SharpLearning.Metrics.Regression;
+using SharpLearning.Containers;
+#endregion SharpLearningNameSpaces
 
 namespace Data_mining_project.PostPruners
 {
