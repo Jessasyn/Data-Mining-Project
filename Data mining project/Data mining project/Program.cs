@@ -11,7 +11,9 @@ namespace Data_Mining_Project
         {
             Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new ErrorComplexityPruner());
             //Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new MinimumErrorPruner());
+            //Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new ReducedErrorPruner());
             //Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality");
+            //c.ReadData(0.3, 0.3);
             c.ReadData(0.6);
             c.Learn();
             c.Predict();

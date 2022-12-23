@@ -45,34 +45,37 @@ namespace Data_mining_project.PostPruners
 
             int childCount = t.GetChildren().Count;
 
+            // We prune nodes, by the one that minimizes the error complexity metric, until there are (nearly) no nodes left.
             while (childCount > 3)
             {
                 Node pruneNode = t.Nodes.Select(node => (node, ErrorComplexity(t, trainSet, node)))
                                         .MinBy(n => n.Item2).node;
 
                 double nodeClass = t.MostFrequentClass(pruneNode, populations);
+
+                int nodeChildren = t.GetChildren(pruneNode).Count;
+                
                 t.PruneNode(pruneNode.NodeIndex, nodeClass);
 
                 forest.Add(m.Tree.Nodes.ToList());
 
-                childCount = t.GetChildren().Count;
+                childCount -= nodeChildren;
             }
 
             List<double> accuracies = new List<double>();
             
+            // Then, we calculate the accuracy of each, and take the tree with the maximum error.
             foreach(List<Node> tree in forest)
             {
-                if (tree.Count >= 1)
-                {
-                    t.Nodes.Clear();
-                    t.Nodes.AddRange(tree);
-                    double[] pred = m.Predict(trainSet.Observations);
-                    accuracies.Add(this._metric.Error(trainSet.Targets, pred));
-                }
+                t.Nodes.Clear();
+                t.Nodes.AddRange(tree);
+                double[] pred = m.Predict(trainSet.Observations);
+                accuracies.Add(this._metric.Error(trainSet.Targets, pred));
             }
 
             List<Node> bestTree = forest[accuracies.IndexOf(accuracies.Max())];
 
+            // Lastly, we set the tree of the model to be this most accurate tree.
             t.Nodes.Clear();
             t.Nodes.AddRange(bestTree);
         }

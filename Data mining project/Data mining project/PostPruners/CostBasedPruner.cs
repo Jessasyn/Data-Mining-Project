@@ -1,11 +1,6 @@
 ﻿using Data_mining_project.Metrics;
 using SharpLearning.Containers;
 using SharpLearning.DecisionTrees.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data_mining_project.PostPruners
 {
@@ -34,6 +29,7 @@ namespace Data_mining_project.PostPruners
             }
             base.Prune(c);
         }
+        
         public override double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
         {
             double[] prunePredictions = m.Predict(pruneSet.Observations);

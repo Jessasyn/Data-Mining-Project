@@ -134,20 +134,44 @@ namespace Data_mining_project.Extensions
         /// <returns>A <see cref="List{T}"/>, containing all leaves that are in the subtree rooted at <paramref name="node"/>.</returns>
         public static List<Node> GetLeaves(this BinaryTree tree, Node node)
         {
-            List<Node> res = new List<Node>();
 
             // The node is a leaf node, so we only need to add it to the list.
             if (node.FeatureIndex == -1.0)
             {
-                res.Add(node);
+                return new List<Node>{ node };
             }
-            //The node is not a leaf node, so we continue on to its children.
+            // The node is not a leaf node, so we use its indices to descendd the tree and obtain all leaves.
             else
             {
-                res.AddRange(GetLeaves(tree, tree.Nodes[node.RightIndex]));
-                res.AddRange(GetLeaves(tree, tree.Nodes[node.LeftIndex]));
+                List<Node> res = new List<Node>();
+
+                List<int> indices = new List<int> { node.RightIndex, node.LeftIndex };
+
+                while (indices.Any())
+                {
+                    int index = indices.First();
+                    indices = indices.Skip(1).ToList();
+
+                    Node childNode = tree.Nodes[index];
+                    if (childNode.FeatureIndex == -1.0)
+                    {
+                        res.Add(childNode);
+                    }
+                    else
+                    {
+                        if(childNode.RightIndex != -1.0)
+                        {
+                            indices.Add(childNode.RightIndex);
+                        }
+                        if (childNode.LeftIndex != -1.0)
+                        {
+                            indices.Add(childNode.LeftIndex);
+                        }
+                    }
+                }
+                
+                return res;
             }
-            return res;
         }
 
         /// <summary>
