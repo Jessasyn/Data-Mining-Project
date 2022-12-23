@@ -23,8 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="winequality-white.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Datasets\diabetes.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Datasets\winequality-white.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
