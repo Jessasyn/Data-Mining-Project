@@ -9,12 +9,26 @@ using Data_mining_project.Metrics;
 
 namespace Data_mining_project.PostPruners
 {
+    /// <summary>
+    /// A reduced error pruner that uses a cost dictionary with the cost of a false positive and 
+    /// false negative for every class to evaluate the error.
+    /// </summary>
     public sealed class CostBasedPruner : ReducedErrorPruner
     {
+        /// <summary>
+        /// Dictionary with the following format: (class, (cost of false positive, cost of false negative)
+        /// </summary>
         private readonly Dictionary<double, (double, double)> _costs;
 
+        /// <summary>
+        /// Metric used for evaluating accuracy with the pruning set.
+        /// </summary>
         private readonly CostBasedMetric _metric = new CostBasedMetric();
         
+        /// <summary>
+        /// Create the cost based pruner.
+        /// </summary>
+        /// <param name="costs">Cost dictionary</param>
         public CostBasedPruner(Dictionary<double, (double, double)> costs) {
             this._costs = costs;
         }
