@@ -23,7 +23,7 @@ namespace Data_mining_project.Metrics
                 throw new ArgumentException("targets and predictions length do not match");
             }
 
-            double meanSquareError = 0d;
+            double weightedError = 0d;
             for (int i = 0; i < targets.Length; ++i)
             {
                 var targetValue = targets[i];
@@ -31,13 +31,14 @@ namespace Data_mining_project.Metrics
                 double error = 0d;
                 if (targetValue != estimate)
                 {
-
+                    error += costs[estimate].Item1 / 2; // False positive estimate
+                    error += costs[targetValue].Item2 / 2; // False negative targetValue
                 }
-                meanSquareError += error;
+                weightedError += error;
             }
-            meanSquareError *= (1.0 / targets.Length);
+            weightedError *= (1.0 / targets.Length);
 
-            return meanSquareError;
+            return weightedError;
         }
     }
 }

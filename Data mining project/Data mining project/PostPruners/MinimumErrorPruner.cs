@@ -46,12 +46,12 @@ namespace Data_mining_project.PostPruners
         }
 
         /// <summary>
-        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> in tree <paramref name="tree"> using populations matrix <paramref name="populations"/>, 
+        /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> in tree <paramref name="tree"/> using populations matrix <paramref name="populations"/>, 
         /// if that node is pruned into a leaf with its most popular class
         /// </summary>
-        /// <param name="k">Total number of classes present in the population</param>
-        /// <param name="t"></param>
-        /// <param name="populations"></param>
+        /// <param name="tree">The binary tree</param>
+        /// <param name="t">The node</param>
+        /// <param name="populations">The populations matrix</param>
         /// <returns>Niblett-Brotko Error E(<paramref name="t"/>)</returns>
         private static double PrunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {
@@ -67,9 +67,9 @@ namespace Data_mining_project.PostPruners
         /// Calculate the Niblett-Brotko Error on a node <paramref name="t"/> in tree <paramref name="tree"/> using populations matrix <paramref name="populations"/>, 
         /// if that node is NOT pruned into a leaf with its most popular class
         /// </summary>
-        /// <param name="tree"></param>
-        /// <param name="t"></param>
-        /// <param name="populations"></param>
+        /// <param name="tree">The binary tree</param>
+        /// <param name="t">The node</param>
+        /// <param name="populations">The populations matrix</param>
         /// <returns></returns>
         private static double UnprunedNiblettBrotkoError(BinaryTree tree, Node t, F64Matrix populations)
         {

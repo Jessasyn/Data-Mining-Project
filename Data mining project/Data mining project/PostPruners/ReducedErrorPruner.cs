@@ -10,7 +10,7 @@ namespace Data_mining_project.PostPruners
     /// <summary>
     /// An implementation of <see cref="IPruner"/> which uses the reduced error pruning algorithm to prune a decision tree.
     /// </summary>
-    public sealed class ReducedErrorPruner : PrunerBase
+    public class ReducedErrorPruner : PrunerBase
     {
         /// <summary>
         /// The metric that is used to measure the error of the tree in <see cref="PruneSetError(ClassificationDecisionTreeModel, ObservationTargetSet)"/>.
@@ -73,7 +73,7 @@ namespace Data_mining_project.PostPruners
         /// on the <see cref="ObservationTargetSet"/> <paramref name="pruneSet"/>, and returns that as a <see cref="double"/>.
         /// </summary>
         /// <returns>A <see cref="double"/>, which is the error rate that is computed.</returns>
-        private double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
+        public virtual double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
         {
             double[] prunePredictions = m.Predict(pruneSet.Observations);
 
