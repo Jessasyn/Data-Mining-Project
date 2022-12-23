@@ -11,7 +11,12 @@ namespace Data_mining_project.PostPruners
 {
     internal class CostBasedPruner : ReducedErrorPruner
     {
-        public Dictionary<double, (double, double)>? Costs { get; set; }
+        public Dictionary<double, (double, double)> Costs { get; set; }
+
+        public CostBasedPruner(Dictionary<double, (double, double)> costs) {
+            Costs = costs;
+        }
+
         public override void Prune(IClassifier c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
@@ -27,10 +32,6 @@ namespace Data_mining_project.PostPruners
             if (c.GetPruneSet() is not ObservationTargetSet pruneSet)
             {
                 throw new InvalidOperationException($"{nameof(c)} does not have a pruning data set, which is required for the {nameof(CostBasedPruner)}!");
-            }
-            if (Costs is null)
-            {
-                throw new InvalidOperationException($"Required {nameof(Costs)} is not set for {nameof(CostBasedPruner)}, which is required.");
             }
             base.Prune(c);
         }

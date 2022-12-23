@@ -9,10 +9,12 @@ namespace Data_Mining_Project
     {
         public static void Main()
         {
-            Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new ErrorComplexityPruner());
+            //Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new ErrorComplexityPruner());
             //Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new MinimumErrorPruner());
+            //Dictionary<double, (double, double)> costs = new();
+            Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality", new CostBasedPruner(costs));
             //Classifier c = new Classifier(() => new StreamReader("winequality-white.csv"), "quality");
-            c.ReadData(0.6);
+            c.ReadData(0.5, 0.3);
             c.Learn();
             c.Predict();
 
