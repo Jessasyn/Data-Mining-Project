@@ -94,22 +94,27 @@ namespace Data_mining_project
         /// The default value of this field is null, which means that no post pruning will be done.
         /// </summary>
         private readonly IPruner? PostPruner;
+
+        /// <summary>
+        /// The time it has taken to prune the classifier.
+        /// </summary>
+        public TimeSpan PruneTime { get; private set; } = TimeSpan.Zero;
         
         /// <summary>
         /// Constructs a new classifier, which will read from the path provided in <paramref name="parserPath"/>, 
         /// and consider the target column with the name <paramref name="targetColumn"/>.
         /// </summary>
-        /// <param name="parserPath">The function which returns a textreader, to be used in the reading of the CSV.</param>
+        /// <param name="parserPath">The path to the.</param>
         /// <param name="targetColumn">The name of the column that contains the values to be predicted.</param>
         /// <param name="postPruner">The <see cref="IPruner"/> that will be used to prune the classifier, after it has been learned.</param>
-        public Classifier(Func<TextReader> parserPath, string targetColumn, IPruner? postPruner = null)
+        public Classifier(string parserPath, string targetColumn, IPruner? postPruner = null)
         {
-            //TODO: i propose the creation of an enum that is passed along in the constructor, which specifies the pruning method to use.
-            // then, we can internalize that, which leads to more abstraction.
-            // Re: I don't really understand why you would want to use an enum if you can just pass the pruning Action directly.
-            // Re 2: we can do that, but then the actions need to be constant, which is not the case up until now.
-            //       that is to say, someone can change the pruning action after the classifier has been constructed, and create nasty bugs.
-            this._parser = new CsvParser(parserPath);
+            if (!parserPath.EndsWith(".csv"))
+            {
+                parserPath += ".csv";   
+            }
+            
+            this._parser = new CsvParser(() => new StreamReader($"Datasets/{parserPath}"));
             this._targetColumn = targetColumn;
             this.PostPruner = postPruner;
         }
@@ -162,7 +167,11 @@ namespace Data_mining_project
 
             this.Model = treeLearner.Learn(this.TrainSet.Observations, this.TrainSet.Targets);
 
+            DateTime start = DateTime.UtcNow;
             this.PostPruner?.Prune(this);
+            DateTime end = DateTime.UtcNow;
+
+            this.PruneTime = end - start;
         }
 
         [MemberNotNull(nameof(this.TestError), nameof(this.VariableImportance))]
