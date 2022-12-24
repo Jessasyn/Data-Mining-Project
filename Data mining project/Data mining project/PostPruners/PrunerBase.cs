@@ -7,6 +7,6 @@ namespace Data_mining_project.PostPruners
     /// </summary>
     public abstract class PrunerBase : IPruner
     {
-        public abstract void Prune(IModelInterface c);
+        public abstract void Prune(IClassificationModel c);
     }
 }

@@ -14,7 +14,7 @@ namespace Data_mining_project.PostPruners
 {
     public sealed class MinimumErrorPruner : PrunerBase
     {
-        public override void Prune(IModelInterface c)
+        public override void Prune(IClassificationModel c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {

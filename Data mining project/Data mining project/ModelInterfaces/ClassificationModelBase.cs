@@ -23,7 +23,7 @@ namespace Data_mining_project.ModelInterfaces
     /// <summary>
     /// A wrapper around functionality from SharpLearning, to make it easier to use.
     /// </summary>
-    public abstract class ModelInterfaceBase : IModelInterface
+    public abstract class ClassificationModelBase : IClassificationModel
     {
         /// <summary>
         /// The parser used for reading in datasets.
@@ -108,7 +108,7 @@ namespace Data_mining_project.ModelInterfaces
         /// <param name="parserPath">The path to the.</param>
         /// <param name="targetColumn">The name of the column that contains the values to be predicted.</param>
         /// <param name="postPruner">The <see cref="IPruner"/> that will be used to prune the classifier, after it has been learned.</param>
-        public ModelInterfaceBase(string parserPath, string targetColumn, IPruner? postPruner = null)
+        public ClassificationModelBase(string parserPath, string targetColumn, IPruner? postPruner = null)
         {
             if (!parserPath.EndsWith(".csv"))
             {
@@ -179,12 +179,12 @@ namespace Data_mining_project.ModelInterfaces
 
         public abstract void Error();
 
-        ClassificationDecisionTreeModel? IModelInterface.GetModel() => Model;
+        ClassificationDecisionTreeModel? IClassificationModel.GetModel() => Model;
 
-        ObservationTargetSet? IModelInterface.GetPruneSet() => PruneSet;
+        ObservationTargetSet? IClassificationModel.GetPruneSet() => PruneSet;
 
-        ObservationTargetSet? IModelInterface.GetTrainingSet() => TrainSet;
+        ObservationTargetSet? IClassificationModel.GetTrainingSet() => TrainSet;
 
-        ObservationTargetSet? IModelInterface.GetTestSet() => TestSet;
+        ObservationTargetSet? IClassificationModel.GetTestSet() => TestSet;
     }
 }

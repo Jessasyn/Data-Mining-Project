@@ -19,8 +19,8 @@ namespace Data_Mining_Project
 
         public static void Main()
         {
-            /*            Console.WriteLine("ORDINAL WINE PROBLEM");
-                        OrdinalWine();*/
+            Console.WriteLine("ORDINAL WINE PROBLEM");
+            OrdinalWine();
 
             Console.WriteLine("NOMINAL DIABETES PROBLEM");
             NominalDiabetes();
@@ -32,8 +32,8 @@ namespace Data_Mining_Project
             // For a sick person we don't really mind a false positive but we really mind a false negative
             // The opposite is true for a sick person
             Dictionary<double, (double, double)> costs = new()
-            { {0d, (1d, 0d)},
-              {1d, (0d, 1d)} };
+            { {0d, (1d, 0.2d)},
+              {1d, (0.2d, 1d)} };
 
             //We run on all classifiers, starting with no pruning.
             Console.WriteLine("No pruning:");
@@ -45,7 +45,7 @@ namespace Data_Mining_Project
 
             //Reduced Error pruning
             Console.WriteLine("Reduced error pruning:");
-            NominalClassificationModel redEr = new NominalClassificationModel(DiabetesPath, DiabetesColumn, new ReducedErrorPrunerBase());
+            NominalClassificationModel redEr = new NominalClassificationModel(DiabetesPath, DiabetesColumn, new ReducedErrorPruner());
             redEr.ReadData(0.6, 0.2);
             redEr.Learn();
             ErrorAndCostError(redEr, costs);
@@ -57,18 +57,15 @@ namespace Data_Mining_Project
             minEr.Learn();
             ErrorAndCostError(minEr, costs);
 
+            //Error complexity pruning
+            Console.WriteLine("Error complexity pruning:");
+            NominalClassificationModel erComp = new NominalClassificationModel(DiabetesPath, DiabetesColumn, new ErrorComplexityPruner());
+            erComp.ReadData(0.6);
+            erComp.Learn();
+            ErrorAndCostError(erComp, costs);
+
             //Cost Based Pruning
             Console.WriteLine("Cost based pruning:");
-
-            //Error complexity pruning
-            /*            Console.WriteLine("Error complexity pruning:");
-                        NominalClassificationModel errorPrune = new NominalClassificationModel(WinePath, WineTargetColumn, new ErrorComplexityPruner());
-                        errorPrune.ReadData(0.6);
-                        errorPrune.Learn();
-                        errorPrune.Error();
-                        Console.WriteLine($"\tError: {errorPrune.TestError}");
-                        Console.WriteLine($"\tTime taken: {errorPrune.PruneTime}");*/
-
             NominalClassificationModel costBased = new NominalClassificationModel(DiabetesPath, DiabetesColumn, new CostBasedPruner(costs));
             costBased.ReadData(0.6, 0.2);
             costBased.Learn();
@@ -95,16 +92,16 @@ namespace Data_Mining_Project
             Console.WriteLine($"\tError: {noPrune.TestError}");
             Console.WriteLine($"\tTime taken: {noPrune.PruneTime}");
 
-            
-
+            // Reduced error pruning
             Console.WriteLine("Reduced error pruning:");
-            OrdinalClassificationModel reducedErrorPrune = new OrdinalClassificationModel(WinePath, WineTargetColumn, new ReducedErrorPrunerBase());
+            OrdinalClassificationModel reducedErrorPrune = new OrdinalClassificationModel(WinePath, WineTargetColumn, new ReducedErrorPruner());
             reducedErrorPrune.ReadData(0.3, 0.3);
             reducedErrorPrune.Learn();
             reducedErrorPrune.Error();
             Console.WriteLine($"\tError: {reducedErrorPrune.TestError}");
             Console.WriteLine($"\tTime taken: {reducedErrorPrune.PruneTime}");
 
+            // Minimum error pruning
             Console.WriteLine("Minimum error pruning:");
             OrdinalClassificationModel minimumErrorPrune = new OrdinalClassificationModel(WinePath, WineTargetColumn, new MinimumErrorPruner());
             minimumErrorPrune.ReadData(0.3, 0.3);
@@ -113,14 +110,14 @@ namespace Data_Mining_Project
             Console.WriteLine($"\tError: {minimumErrorPrune.TestError}");
             Console.WriteLine($"\tTime taken: {minimumErrorPrune.PruneTime}");
 
-            //TODO: figure out actual costs.
-            //Console.WriteLine("Cost based pruning:");
-            //Classifier costBasedPruner = new Classifier(DataPath, Column, new CostBasedPruner(new Dictionary<double, (double, double)> { }));
-            //costBasedPruner.ReadData(0.3, 0.3);
-            //costBasedPruner.Learn();
-            //costBasedPruner.Predict();
-            //Console.WriteLine($"\tError: {costBasedPruner.TestError}");
-            //Console.WriteLine($"\tTime taken: {costBasedPruner.PruneTime}");
+            //Error complexity pruning
+            Console.WriteLine("Error complexity pruning:");
+            NominalClassificationModel errorPrune = new NominalClassificationModel(WinePath, WineTargetColumn, new ErrorComplexityPruner());
+            errorPrune.ReadData(0.6);
+            errorPrune.Learn();
+            errorPrune.Error();
+            Console.WriteLine($"\tError: {errorPrune.TestError}");
+            Console.WriteLine($"\tTime taken: {errorPrune.PruneTime}");
         }
     }
 }

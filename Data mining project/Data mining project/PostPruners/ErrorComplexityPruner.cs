@@ -16,7 +16,7 @@ namespace Data_mining_project.PostPruners
     public sealed class ErrorComplexityPruner : PrunerBase
     {
         /// <summary>
-        /// The metric that is used to measure the error of the tree in <see cref="Prune(IModelInterface)"/>.
+        /// The metric that is used to measure the error of the tree in <see cref="Prune(IClassificationModel)"/>.
         /// </summary>
         private readonly MeanSquaredErrorRegressionMetric _metric = new MeanSquaredErrorRegressionMetric();
 
@@ -25,7 +25,7 @@ namespace Data_mining_project.PostPruners
         /// </summary>
         /// <param name="c">The classifier to use pruning on.</param>
         /// <exception cref="InvalidOperationException">If the state does not permit pruning.</exception>
-        public override void Prune(IModelInterface c)
+        public override void Prune(IClassificationModel c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {

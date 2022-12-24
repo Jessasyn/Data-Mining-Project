@@ -21,10 +21,6 @@ namespace Data_mining_project.PostPruners
         /// </summary>
         public readonly Dictionary<double, (double, double)> costs;
 
-        /// <summary>
-        /// Metric used for evaluating accuracy with the pruning set.
-        /// </summary>
-        private readonly CostBasedMetric _metric;
         
         /// <summary>
         /// Create the cost based pruner.
@@ -32,10 +28,9 @@ namespace Data_mining_project.PostPruners
         /// <param name="costs">Cost dictionary</param>
         public CostBasedPruner(Dictionary<double, (double, double)> costs) {
             this.costs = costs;
-            _metric = new CostBasedMetric(costs);
         }
 
-        public sealed override void Prune(IModelInterface c)
+        public sealed override void Prune(IClassificationModel c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {
@@ -48,6 +43,13 @@ namespace Data_mining_project.PostPruners
             }
             
             base.Prune(c);
+        }
+
+        protected override double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
+        {
+            double[] prunePredictions = m.Predict(pruneSet.Observations);
+            var costMetric = new CostBasedMetric(this.costs);
+            return costMetric.Error(pruneSet.Targets, prunePredictions);
         }
     }
 }

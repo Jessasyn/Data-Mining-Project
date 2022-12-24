@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace Data_mining_project.ModelInterfaces
 {
     /// <summary>
-    /// Interface for regression model
+    /// Interface for ordinal classification model
     /// </summary>
-    internal class OrdinalClassificationModel : ModelInterfaceBase
+    internal class OrdinalClassificationModel : ClassificationModelBase
     {
         /// <summary>
         /// Regression metric, used in function Error, mean squared error by default.

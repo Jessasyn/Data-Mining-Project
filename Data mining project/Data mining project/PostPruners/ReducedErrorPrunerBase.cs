@@ -19,16 +19,11 @@ namespace Data_mining_project.PostPruners
     public abstract class ReducedErrorPrunerBase : PrunerBase
     {
         /// <summary>
-        /// The metric that is used to measure the error of the tree in <see cref="PruneSetError(ClassificationDecisionTreeModel, ObservationTargetSet)"/>.
-        /// </summary>
-        public object metric = new MeanSquaredErrorRegressionMetric();
-
-        /// <summary>
         /// Prunes the <paramref name="c"/> using the reduced error pruning algorithm.
         /// </summary>
         /// <param name="c">The classifier to prune.</param>
         /// <exception cref="InvalidOperationException">If the state does not allow for pruning to occur.</exception>
-        public override void Prune(IModelInterface c)
+        public override void Prune(IClassificationModel c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {

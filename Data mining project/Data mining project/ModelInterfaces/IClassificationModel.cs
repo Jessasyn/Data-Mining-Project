@@ -6,7 +6,7 @@ namespace Data_mining_project.ModelInterfaces
     /// <summary>
     /// The interface that represents a classifier.
     /// </summary>
-    public interface IModelInterface
+    public interface IClassificationModel
     {
         /// <summary>
         /// Reads in data from the path provided during class construction, splits it with the specified <paramref name="trainPercentage"/>, 

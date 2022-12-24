@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 namespace Data_mining_project.ModelInterfaces
 {
     /// <summary>
-    /// Interface for classification model
+    /// Interface for nominal classification model
     /// </summary>
-    public class NominalClassificationModel : ModelInterfaceBase
+    public class NominalClassificationModel : ClassificationModelBase
     {
         /// <summary>
         /// Cost obtained using the CostError method.

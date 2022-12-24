@@ -14,6 +14,6 @@ namespace Data_mining_project.PostPruners
         /// Prunes the <see cref="BinaryTree"/> present in <paramref name="c"/>.
         /// </summary>
         /// <param name="c">The classifier that will be pruned.</param>
-        public void Prune(IModelInterface c);
+        public void Prune(IClassificationModel c);
     }
 }
