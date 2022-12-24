@@ -11,7 +11,7 @@ namespace Data_Mining_Project
 
         public const string WineTargetColumn = "quality";
 
-        public const string DiabetesPath = @"diabetes";
+        public const string DiabetesPath = @"diabetes2";
 
         public const string DiabetesColumn = "Outcome";
 
