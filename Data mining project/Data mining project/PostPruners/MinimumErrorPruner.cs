@@ -13,7 +13,7 @@ namespace Data_mining_project.PostPruners
 {
     public sealed class MinimumErrorPruner : PrunerBase
     {
-        public override void Prune(IClassifier c)
+        public override void Prune(IModelInterface c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {

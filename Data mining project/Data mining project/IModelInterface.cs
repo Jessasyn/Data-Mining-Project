@@ -7,7 +7,7 @@ namespace Data_mining_project
     /// <summary>
     /// The interface that represents a classifier.
     /// </summary>
-    public interface IClassifier
+    public interface IModelInterface
     {
         /// <summary>
         /// Reads in data from the path provided during class construction, splits it with the specified <paramref name="trainPercentage"/>, 
@@ -28,11 +28,12 @@ namespace Data_mining_project
         /// Predicts the test set, and reports the error measures. <br/>
         /// This function does <b>not</b> work if <see cref="Learn"/> has not been called.
         /// </summary>
-        public void Predict();
+        public void Error();
 
         /// <summary>
         /// Getter for the <see cref="ClassificationDecisionTreeModel"/> of this classifier.
         /// </summary>
+        /// 
         public ClassificationDecisionTreeModel? GetModel();
 
         /// <summary>

@@ -33,7 +33,7 @@ namespace Data_mining_project.PostPruners
             this._costs = costs;
         }
 
-        public sealed override void Prune(IClassifier c)
+        public sealed override void Prune(IModelInterface c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {

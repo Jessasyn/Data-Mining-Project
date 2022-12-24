@@ -5,6 +5,6 @@
     /// </summary>
     public abstract class PrunerBase : IPruner
     {
-        public abstract void Prune(IClassifier c);
+        public abstract void Prune(IModelInterface c);
     }
 }

@@ -27,7 +27,7 @@ namespace Data_mining_project.PostPruners
         /// </summary>
         /// <param name="c">The classifier to prune.</param>
         /// <exception cref="InvalidOperationException">If the state does not allow for pruning to occur.</exception>
-        public override void Prune(IClassifier c)
+        public override void Prune(IModelInterface c)
         {
             if (c.GetModel() is not ClassificationDecisionTreeModel m)
             {

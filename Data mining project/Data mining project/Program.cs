@@ -15,7 +15,7 @@ namespace Data_Mining_Project
         {
             //We run on all classifiers, starting with no pruning.
             Console.WriteLine("No pruning:");
-            Classifier noPrune = new Classifier(DataPath, Column);
+            ModelInterfaceBase noPrune = new ModelInterfaceBase(DataPath, Column);
             noPrune.ReadData(0.6);
             noPrune.Learn();
             noPrune.Predict();
@@ -23,7 +23,7 @@ namespace Data_Mining_Project
             Console.WriteLine($"\tTime taken: {noPrune.PruneTime}");
 
             Console.WriteLine("Error complexity pruning:");
-            Classifier errorPrune = new Classifier(DataPath, Column, new ErrorComplexityPruner());
+            ModelInterfaceBase errorPrune = new ModelInterfaceBase(DataPath, Column, new ErrorComplexityPruner());
             errorPrune.ReadData(0.6);
             errorPrune.Learn();
             errorPrune.Predict();
@@ -31,7 +31,7 @@ namespace Data_Mining_Project
             Console.WriteLine($"\tTime taken: {errorPrune.PruneTime}");
 
             Console.WriteLine("Reduced error pruning:");
-            Classifier reducedErrorPrune = new Classifier(DataPath, Column, new ReducedErrorPruner());
+            ModelInterfaceBase reducedErrorPrune = new ModelInterfaceBase(DataPath, Column, new ReducedErrorPruner());
             reducedErrorPrune.ReadData(0.3, 0.3);
             reducedErrorPrune.Learn();
             reducedErrorPrune.Predict();
@@ -39,7 +39,7 @@ namespace Data_Mining_Project
             Console.WriteLine($"\tTime taken: {reducedErrorPrune.PruneTime}");
 
             Console.WriteLine("Minimum error pruning:");
-            Classifier minimumErrorPrune = new Classifier(DataPath, Column, new MinimumErrorPruner());
+            ModelInterfaceBase minimumErrorPrune = new ModelInterfaceBase(DataPath, Column, new MinimumErrorPruner());
             minimumErrorPrune.ReadData(0.3, 0.3);
             minimumErrorPrune.Learn();
             minimumErrorPrune.Predict();

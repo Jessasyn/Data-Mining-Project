@@ -6,6 +6,7 @@ using SharpLearning.Containers.Matrices;
 using SharpLearning.Metrics.Regression;
 using SharpLearning.InputOutput.Csv;
 using SharpLearning.Containers;
+using SharpLearning.Metrics.Classification;
 #endregion SharpLearningNameSpaces
 
 #region GenericNameSpaces
@@ -22,8 +23,13 @@ namespace Data_mining_project
     /// <summary>
     /// A wrapper around functionality from SharpLearning, to make it easier to use.
     /// </summary>
-    public sealed class Classifier : IClassifier
+    public abstract class ModelInterfaceBase : IModelInterface
     {
+        /// <summary>
+        /// Classification metric, used in function ClassificationError, total error by default.
+        /// </summary>
+        public IClassificationMetric<double> Metric = new TotalErrorClassificationMetric<double>();
+
         /// <summary>
         /// The parser used for reading in datasets.
         /// </summary>
@@ -107,7 +113,7 @@ namespace Data_mining_project
         /// <param name="parserPath">The path to the.</param>
         /// <param name="targetColumn">The name of the column that contains the values to be predicted.</param>
         /// <param name="postPruner">The <see cref="IPruner"/> that will be used to prune the classifier, after it has been learned.</param>
-        public Classifier(string parserPath, string targetColumn, IPruner? postPruner = null)
+        public ModelInterfaceBase(string parserPath, string targetColumn, IPruner? postPruner = null)
         {
             if (!parserPath.EndsWith(".csv"))
             {
@@ -175,28 +181,14 @@ namespace Data_mining_project
         }
 
         [MemberNotNull(nameof(this.TestError), nameof(this.VariableImportance))]
-        public void Predict()
-        {
-            if(this.Model is null || this.TestSet is null)
-            {
-                throw new InvalidOperationException($"Cannot call {this.Predict} before {this.Learn} has been called!");
-            }
+        public abstract void Error();
 
-            double[] testPredictions = this.Model.Predict(this.TestSet.Observations);
+        ClassificationDecisionTreeModel? IModelInterface.GetModel() => this.Model;
 
-            MeanSquaredErrorRegressionMetric metric = new MeanSquaredErrorRegressionMetric();
-            this.TestError = metric.Error(this.TestSet.Targets, testPredictions);
+        ObservationTargetSet? IModelInterface.GetPruneSet() => this.PruneSet;
 
-            this.VariableImportance = this.Model.GetVariableImportance(this._parser.EnumerateRows(c => c != this._targetColumn)
-                                                                                   .First().ColumnNameToIndex);
-        }
+        ObservationTargetSet? IModelInterface.GetTrainingSet() => this.TrainSet;
 
-        ClassificationDecisionTreeModel? IClassifier.GetModel() => this.Model;
-
-        ObservationTargetSet? IClassifier.GetPruneSet() => this.PruneSet;
-
-        ObservationTargetSet? IClassifier.GetTrainingSet() => this.TrainSet;
-
-        ObservationTargetSet? IClassifier.GetTestSet() => this.TestSet;
+        ObservationTargetSet? IModelInterface.GetTestSet() => this.TestSet;
     }
 }
