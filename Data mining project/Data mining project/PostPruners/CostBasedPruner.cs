@@ -5,6 +5,7 @@ using SharpLearning.Containers;
 
 #region DataMiningNameSpaces
 using Data_mining_project.Metrics;
+using Data_mining_project.ModelInterfaces;
 #endregion DataMiningNameSpaces
 
 namespace Data_mining_project.PostPruners
@@ -18,7 +19,7 @@ namespace Data_mining_project.PostPruners
         /// <summary>
         /// Dictionary with the following format: (class, (cost of false positive, cost of false negative)
         /// </summary>
-        private readonly Dictionary<double, (double, double)> _costs;
+        public readonly Dictionary<double, (double, double)> costs;
 
         /// <summary>
         /// Metric used for evaluating accuracy with the pruning set.
@@ -30,7 +31,7 @@ namespace Data_mining_project.PostPruners
         /// </summary>
         /// <param name="costs">Cost dictionary</param>
         public CostBasedPruner(Dictionary<double, (double, double)> costs) {
-            this._costs = costs;
+            this.costs = costs;
         }
 
         public sealed override void Prune(IModelInterface c)
@@ -40,9 +41,9 @@ namespace Data_mining_project.PostPruners
                 throw new InvalidOperationException($"{nameof(c)} does not have a model, call {nameof(c.Learn)} first!");
             }
 
-            if(m.Tree.TargetNames.Any(k => !this._costs.TryGetValue(k, out _)))
+            if(m.Tree.TargetNames.Any(k => !this.costs.TryGetValue(k, out _)))
             {
-                throw new InvalidOperationException($"{nameof(this._costs)} does not contain all target values of the tree, which is required for the {nameof(CostBasedPruner)}");
+                throw new InvalidOperationException($"{nameof(this.costs)} does not contain all target values of the tree, which is required for the {nameof(CostBasedPruner)}");
             }
             
             base.Prune(c);
@@ -51,7 +52,7 @@ namespace Data_mining_project.PostPruners
         protected sealed override double PruneSetError(ClassificationDecisionTreeModel m, ObservationTargetSet pruneSet)
         {
             double[] prunePredictions = m.Predict(pruneSet.Observations);
-            return this._metric.Error(prunePredictions, pruneSet.Targets, this._costs);
+            return this._metric.Error(prunePredictions, pruneSet.Targets, this.costs);
         }
     }
 }

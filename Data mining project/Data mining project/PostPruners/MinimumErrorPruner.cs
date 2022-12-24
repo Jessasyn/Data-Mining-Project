@@ -7,6 +7,7 @@ using SharpLearning.Containers;
 
 #region DataminingNameSpaces
 using Data_mining_project.Extensions;
+using Data_mining_project.ModelInterfaces;
 #endregion DataminingNameSpaces
 
 namespace Data_mining_project.PostPruners

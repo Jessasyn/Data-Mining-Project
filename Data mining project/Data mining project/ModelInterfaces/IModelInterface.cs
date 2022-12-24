@@ -1,8 +1,7 @@
-﻿
-using SharpLearning.Containers;
+﻿using SharpLearning.Containers;
 using SharpLearning.DecisionTrees.Models;
 
-namespace Data_mining_project
+namespace Data_mining_project.ModelInterfaces
 {
     /// <summary>
     /// The interface that represents a classifier.

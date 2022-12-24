@@ -18,7 +18,7 @@ using Data_mining_project.Splitters;
 using Data_mining_project.PostPruners;
 #endregion DataminingNameSpaces
 
-namespace Data_mining_project
+namespace Data_mining_project.ModelInterfaces
 {
     /// <summary>
     /// A wrapper around functionality from SharpLearning, to make it easier to use.
@@ -26,19 +26,14 @@ namespace Data_mining_project
     public abstract class ModelInterfaceBase : IModelInterface
     {
         /// <summary>
-        /// Classification metric, used in function ClassificationError, total error by default.
-        /// </summary>
-        public IClassificationMetric<double> Metric = new TotalErrorClassificationMetric<double>();
-
-        /// <summary>
         /// The parser used for reading in datasets.
         /// </summary>
-        private readonly CsvParser _parser;
+        protected readonly CsvParser parser;
 
         /// <summary>
         /// The name of the column that will be predicted to.
         /// </summary>
-        private readonly string _targetColumn;
+        protected readonly string targetColumn;
 
         /// <summary>
         /// The maximum tree depth that a tree is allowed to grow to.
@@ -88,24 +83,24 @@ namespace Data_mining_project
         /// <summary>
         /// The variable importance for each feature.
         /// </summary>
-        public Dictionary<string, double>? VariableImportance { get; private set; }
+        public Dictionary<string, double>? VariableImportance { get; set; }
 
         /// <summary>
         /// The test error of this classifier, for the specified dataset.
         /// </summary>
-        public double? TestError { get; private set; }
+        public double? TestError { get; set; }
 
         /// <summary>
         /// The <see cref="IPruner"/> that handles post pruning when executed. <br/>
         /// The default value of this field is null, which means that no post pruning will be done.
         /// </summary>
-        private readonly IPruner? PostPruner;
+        protected readonly IPruner? PostPruner;
 
         /// <summary>
         /// The time it has taken to prune the classifier.
         /// </summary>
         public TimeSpan PruneTime { get; private set; } = TimeSpan.Zero;
-        
+
         /// <summary>
         /// Constructs a new classifier, which will read from the path provided in <paramref name="parserPath"/>, 
         /// and consider the target column with the name <paramref name="targetColumn"/>.
@@ -117,23 +112,23 @@ namespace Data_mining_project
         {
             if (!parserPath.EndsWith(".csv"))
             {
-                parserPath += ".csv";   
+                parserPath += ".csv";
             }
-            
-            this._parser = new CsvParser(() => new StreamReader($"Datasets/{parserPath}"));
-            this._targetColumn = targetColumn;
-            this.PostPruner = postPruner;
+
+            parser = new CsvParser(() => new StreamReader($"Datasets/{parserPath}"));
+            this.targetColumn = targetColumn;
+            PostPruner = postPruner;
         }
 
-        [MemberNotNull(nameof(this.TrainSet), nameof(this.TestSet))]
-        public void ReadData(double trainPercentage, double prunePercentage=0d)
+        [MemberNotNull(nameof(TrainSet), nameof(TestSet))]
+        public void ReadData(double trainPercentage, double prunePercentage = 0d)
         {
             //Also known as y.
-            double[] targets = this._parser.EnumerateRows(this._targetColumn)
+            double[] targets = parser.EnumerateRows(targetColumn)
                                            .ToF64Vector();
 
             //Also known as X.
-            F64Matrix observations = this._parser.EnumerateRows(c => c != this._targetColumn)
+            F64Matrix observations = parser.EnumerateRows(c => c != targetColumn)
                                                  .ToF64Matrix();
 
             // If the optional parameter prunePercentage is non-zero, we want to reserve data for pruning.
@@ -142,9 +137,9 @@ namespace Data_mining_project
             {
                 PruningSetSplitter splitter = new PruningSetSplitter(trainPercentage, prunePercentage);
                 PruningSetSplit pruningSetSplit = splitter.SplitSet(observations, targets);
-                this.TrainSet = pruningSetSplit.TrainingSet;
-                this.TestSet = pruningSetSplit.TestSet;
-                this.PruneSet = pruningSetSplit.PruningSet;
+                TrainSet = pruningSetSplit.TrainingSet;
+                TestSet = pruningSetSplit.TestSet;
+                PruneSet = pruningSetSplit.PruningSet;
             }
             // If the optional parameter prunePercentage is zero, we don't need to reserve data for pruning.
             // So, we can just make a train/test split on the entire dataset.
@@ -152,43 +147,44 @@ namespace Data_mining_project
             {
                 TrainingTestIndexSplitter<double> splitter = new StratifiedTrainingTestIndexSplitter<double>(trainPercentage);
                 TrainingTestSetSplit pruningSetSplit = splitter.SplitSet(observations, targets);
-                this.TrainSet = pruningSetSplit.TrainingSet;
-                this.TestSet = pruningSetSplit.TestSet;
+                TrainSet = pruningSetSplit.TrainingSet;
+                TestSet = pruningSetSplit.TestSet;
             }
         }
 
-        [MemberNotNull(nameof(this.Model))]
+        [MemberNotNull(nameof(Model))]
         public void Learn()
         {
-            if (this.TrainSet is null)
+            if (TrainSet is null)
             {
-                throw new InvalidOperationException($"Cannot call {this.Learn} before {this.ReadData} has been called!");
+                throw new InvalidOperationException($"Cannot call {Learn} before {ReadData} has been called!");
             }
 
-            ClassificationDecisionTreeLearner treeLearner = new ClassificationDecisionTreeLearner(this.MaximumTreeDepth,  
-                                                                                                  this.MinimumSplitSize, 
-                                                                                                  this.FeaturesPerSplit,  
-                                                                                                  this.MinimumInformationGain, 
-                                                                                                  this.RandomSeed);
+            ClassificationDecisionTreeLearner treeLearner = new ClassificationDecisionTreeLearner(MaximumTreeDepth,
+                                                                                                  MinimumSplitSize,
+                                                                                                  FeaturesPerSplit,
+                                                                                                  MinimumInformationGain,
+                                                                                                  RandomSeed);
 
-            this.Model = treeLearner.Learn(this.TrainSet.Observations, this.TrainSet.Targets);
+            Model = treeLearner.Learn(TrainSet.Observations, TrainSet.Targets);
 
             DateTime start = DateTime.UtcNow;
-            this.PostPruner?.Prune(this);
+            PostPruner?.Prune(this);
             DateTime end = DateTime.UtcNow;
 
-            this.PruneTime = end - start;
+            PruneTime = end - start;
         }
 
-        [MemberNotNull(nameof(this.TestError), nameof(this.VariableImportance))]
+        [MemberNotNull(nameof(TestError), nameof(VariableImportance))]
+
         public abstract void Error();
 
-        ClassificationDecisionTreeModel? IModelInterface.GetModel() => this.Model;
+        ClassificationDecisionTreeModel? IModelInterface.GetModel() => Model;
 
-        ObservationTargetSet? IModelInterface.GetPruneSet() => this.PruneSet;
+        ObservationTargetSet? IModelInterface.GetPruneSet() => PruneSet;
 
-        ObservationTargetSet? IModelInterface.GetTrainingSet() => this.TrainSet;
+        ObservationTargetSet? IModelInterface.GetTrainingSet() => TrainSet;
 
-        ObservationTargetSet? IModelInterface.GetTestSet() => this.TestSet;
+        ObservationTargetSet? IModelInterface.GetTestSet() => TestSet;
     }
 }

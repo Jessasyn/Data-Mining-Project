@@ -8,6 +8,7 @@ using SharpLearning.DecisionTrees.Models;
 using SharpLearning.DecisionTrees.Nodes;
 using SharpLearning.Metrics.Regression;
 using SharpLearning.Containers;
+using Data_mining_project.ModelInterfaces;
 #endregion SharpLearningNameSpaces
 
 namespace Data_mining_project.PostPruners
