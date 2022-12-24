@@ -16,6 +16,10 @@ namespace Data_mining_project.ModelInterfaces
     public class NominalClassificationModel : ModelInterfaceBase
     {
         /// <summary>
+        /// Cost obtained using the CostError method.
+        /// </summary>
+        public double CostTestError { get; set; }
+        /// <summary>
         /// Classification metric, used in function Error, total classification error by default.
         /// </summary>
         public IClassificationMetric<double> Metric = new TotalErrorClassificationMetric<double>();
@@ -54,8 +58,8 @@ namespace Data_mining_project.ModelInterfaces
             double[] testPredictions = Model.Predict(TestSet.Observations);
 
             // In the special case that we use cost based pruning, we take into account the costs for the error calculus.
-            var costMetric = new CostBasedMetric();
-            TestError = costMetric.Error(TestSet.Targets, testPredictions, costs);
+            var costMetric = new CostBasedMetric(costs);
+            CostTestError = costMetric.Error(TestSet.Targets, testPredictions);
 
             VariableImportance = Model.GetVariableImportance(parser.EnumerateRows(c => c != targetColumn)
                                                                                    .First().ColumnNameToIndex);

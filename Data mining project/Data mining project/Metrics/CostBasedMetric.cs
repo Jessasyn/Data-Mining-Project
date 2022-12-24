@@ -8,6 +8,11 @@ namespace Data_mining_project.Metrics
 {
     public class CostBasedMetric
     {
+        private Dictionary<double, (double, double)> _costs;
+        public CostBasedMetric(Dictionary<double, (double, double)> costs) 
+        {
+            this._costs = costs;
+        }
         /// <summary>
         /// Calculate error using costs.
         /// </summary>
@@ -16,7 +21,7 @@ namespace Data_mining_project.Metrics
         /// <param name="costs">Dictionary with as key the class and a tuple (cost of false positive, cost of false negative)</param>
         /// <returns>Error rate</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public double Error(double[] targets, double[] predictions, Dictionary<double, (double, double)> costs)
+        public double Error(double[] targets, double[] predictions)
         {
             if (targets.Length != predictions.Length)
             {
@@ -31,8 +36,8 @@ namespace Data_mining_project.Metrics
                 double error = 0d;
                 if (targetValue != estimate)
                 {
-                    error += costs[estimate].Item1 / 2; // False positive estimate
-                    error += costs[targetValue].Item2 / 2; // False negative targetValue
+                    error += _costs[estimate].Item1 / 2; // False positive estimate
+                    error += _costs[targetValue].Item2 / 2; // False negative targetValue
                 }
                 weightedError += error;
             }
